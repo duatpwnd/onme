@@ -1,6 +1,5 @@
 <template>
   <div id="nav">
-    {{ data }}
     <button @click="test()">click me</button>
   </div>
   <router-view />
