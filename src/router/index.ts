@@ -18,6 +18,12 @@ const routes: Array<RouteRecordRaw> = [
         /* webpackChunkName: "CopyRightWorks" */ "../views/CopyRightWorksDetail.vue"
       ),
   },
+  {
+    path: "/feed",
+    name: "WorkFeed",
+    component: () =>
+      import(/* webpackChunkName: "WorkFeed" */ "../views/WorkFeed.vue"),
+  },
 ];
 
 const router = createRouter({
