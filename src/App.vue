@@ -1,18 +1,11 @@
 <template>
-  <div id="nav">
-    <BaseSwitcherButton> 공개 </BaseSwitcherButton>
-    <BaseSwitcherButton></BaseSwitcherButton>
-    <BaseSwitcherButton></BaseSwitcherButton>
-  </div>
+  <div id="nav"></div>
 </template>
 <script lang="ts">
   import { computed, defineComponent, onUpdated, ref } from "vue";
-  import BaseSwitcherButton from "@/components/common/BaseSwitcherButton.vue";
+  import BaseCheckBox from "@/components/common/BaseCheckBox.vue";
   export default defineComponent({
     name: "Home",
-    components: {
-      BaseSwitcherButton,
-    },
     setup() {
       console.log("setup호출");
       onUpdated(() => {
