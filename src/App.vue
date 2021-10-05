@@ -1,5 +1,5 @@
 <template>
-  <div id="nav"></div>
+  <router-view />
 </template>
 <script lang="ts">
   import { computed, defineComponent, onUpdated, ref } from "vue";

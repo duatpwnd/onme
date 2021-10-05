@@ -20,13 +20,18 @@ ul {
     list-style: none;
   }
 }
+dt {
+  font-weight: 700;
+}
 a {
   text-decoration: none;
   color: black;
 }
+span {
+  display: inline-block;
+}
 img {
   vertical-align: middle;
-  width: 100%;
 }
 button {
   background: white;
