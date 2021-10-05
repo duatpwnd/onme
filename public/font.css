@@ -1,0 +1,23 @@
+/*
+swap : 폴백 폰트로 글자를 렌더링하고, 웹 폰트 로딩이 완료되면 웹 폰트를 적용한다. 웹 폰트 로딩 여부와 관계없이 항상 텍스트가 보인다.
+
+block : FOIT와 동일하게 작동하는 옵션이다. 웹 폰트가 로딩되지 않았을 때는 텍스트를 렌더링하지 않는다(최대 3초). 웹 폰트 로딩이 완료되면 웹 폰트를 적용한다. 
+
+format을 작성해서 해당폰트를 지원해주는 브라우저에서 해당폰트만 다운
+*/
+@font-face {
+  font-family: "AppleSDGothic";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/AppleSDGothicNeoB.woff2") format("woff2"),
+    url("/fonts/AppleSDGothicNeoB.woff") format("woff");
+}
+@font-face {
+  font-family: "AppleSDGothic";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/AppleSDGothicNeoR.woff2") format("woff2"),
+    url("/fonts/AppleSDGothicNeoR.woff") format("woff");
+}
