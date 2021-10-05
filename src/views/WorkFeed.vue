@@ -19,22 +19,30 @@
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, reactive } from "vue";
+  // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: S
+  const showScanBtn = () => {
+    const scanBtn = reactive({
+      show: true,
+      lastScrollPosition: 0,
+    });
+    const onScroll = () => {
+      console.log(scanBtn.lastScrollPosition);
 
+      if (scanBtn.lastScrollPosition <= window.scrollY) {
+        scanBtn.show = false;
+      } else {
+        scanBtn.show = true;
+      }
+      scanBtn.lastScrollPosition = window.scrollY;
+    };
+    return { scanBtn, onScroll };
+  };
+  // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: E
   export default defineComponent({
     name: "HelloWorld",
     setup() {
-      const scanBtn = reactive({
-        show: true,
-        lastScrollPosition: 0,
-      });
-      const onScroll = () => {
-        if (scanBtn.lastScrollPosition <= window.scrollY) {
-          scanBtn.show = false;
-        } else {
-          scanBtn.show = true;
-        }
-        scanBtn.lastScrollPosition = window.scrollY;
-      };
+      const { scanBtn, onScroll } = showScanBtn();
+
       onMounted(() => {
         window.addEventListener("scroll", onScroll);
       });
