@@ -1,26 +1,23 @@
 <template>
   <div id="nav">
-    <button @click="test()">click me</button>
+    <BaseSwitcherButton> 공개 </BaseSwitcherButton>
+    <BaseSwitcherButton></BaseSwitcherButton>
+    <BaseSwitcherButton></BaseSwitcherButton>
   </div>
-  <router-view />
 </template>
 <script lang="ts">
   import { computed, defineComponent, onUpdated, ref } from "vue";
+  import BaseSwitcherButton from "@/components/common/BaseSwitcherButton.vue";
   export default defineComponent({
     name: "Home",
+    components: {
+      BaseSwitcherButton,
+    },
     setup() {
       console.log("setup호출");
       onUpdated(() => {
         console.log("updated 호출");
       });
-      const data = ref(0);
-      const test = () => {
-        console.log(data);
-        data.value += 1;
-        console.log(data.value);
-      };
-      const test1 = computed(() => {});
-      return { test, data, test1 };
     },
   });
 </script>
