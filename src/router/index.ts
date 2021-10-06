@@ -4,8 +4,9 @@ import Home from "../views/Home.vue";
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "WorkFeed",
+    component: () =>
+      import(/* webpackChunkName: "WorkFeed" */ "../views/WorkFeed.vue"),
   },
   {
     path: "/detail",
@@ -19,10 +20,10 @@ const routes: Array<RouteRecordRaw> = [
       ),
   },
   {
-    path: "/feed",
-    name: "WorkFeed",
+    path: "/register",
+    name: "Register",
     component: () =>
-      import(/* webpackChunkName: "WorkFeed" */ "../views/WorkFeed.vue"),
+      import(/* webpackChunkName: "Register" */ "../views/Register.vue"),
   },
 ];
 

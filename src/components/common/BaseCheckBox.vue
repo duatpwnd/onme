@@ -1,18 +1,45 @@
 <template>
   <label class="container-checkbox">
-    <input type="checkbox" checked="checked" />
+    <input
+      :id="fieldId"
+      @input="checkFunc()"
+      type="checkbox"
+      :checked="checked"
+    />
     <span class="checkmark"></span>
   </label>
+  <label :for="fieldId">{{ value }}</label>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted } from "vue";
+  import { defineComponent, computed, ref } from "vue";
   export default defineComponent({
     name: "BaseCheckBox",
-    setup() {
-      console.log("setup호출");
-      onMounted(() => {
-        console.log("onmounted호출");
-      });
+    props: {
+      modelValue: {
+        type: Array,
+        required: true,
+      },
+      value: {
+        type: String,
+      },
+      fieldId: {
+        type: String,
+        required: true,
+      },
+    },
+    setup(props: { [key: string]: any }, context) {
+      const checked = computed(() => props.modelValue.includes(props.value));
+      const checkFunc = () => {
+        const updatedValue = props.modelValue;
+        if (checked.value) {
+          const index = updatedValue.indexOf(props.value);
+          updatedValue.splice(index, 1);
+        } else {
+          updatedValue.push(props.value);
+        }
+        context.emit("update:modelValue", updatedValue);
+      };
+      return { checked, checkFunc };
     },
   });
 </script>
