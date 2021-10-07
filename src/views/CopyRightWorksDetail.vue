@@ -90,7 +90,6 @@
         white-space: nowrap;
         margin-left: 16px;
         font-size: 16px;
-        font-weight: 700;
         vertical-align: middle;
       }
       .sns-link {
@@ -171,7 +170,6 @@
     width: 100%;
     button {
       font-size: 16px;
-      font-weight: 700;
       color: white;
       padding: 19px 0px;
     }

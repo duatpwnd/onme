@@ -8,7 +8,39 @@
     />
     <div class="tag">
       <h2 class="title">태그</h2>
-      <input type="text" placeholder="태그입력" class="tag-input" />
+      <b class="prefix">#</b>
+      <span v-for="(list, index) in selectedTag" :key="index">{{
+        list.title
+      }}</span>
+      <input
+        type="text"
+        placeholder="태그입력"
+        class="tag-input"
+        v-on:input="keyword = $event.target.value"
+        :value="keyword"
+        @keyup="search()"
+      />
+      <!-- 태그 리스트 :: S -->
+      <ul class="tag-wrap" v-if="tagList.length > 0">
+        <li
+          v-for="(list, index) in tagList"
+          :key="index"
+          class="tag-list"
+          @click="selectTagFunc(list)"
+        >
+          <img
+            src="@/assets/images/tag_img.png"
+            alt=""
+            title=""
+            class="tag-img"
+          />
+          <div class="tag-info">
+            <b class="tag-title"><b>#</b>{{ list.title }}</b>
+            <span class="works">저작물 {{ list.works }}</span>
+          </div>
+        </li>
+      </ul>
+      <!-- 태그 리스트 :: E -->
     </div>
     <div class="is-open">
       <h2 class="title">공개여부</h2>
@@ -67,17 +99,74 @@
   } from "vue";
   import BaseSwitcherButton from "@/components/common/BaseSwitcherButton.vue";
   import BaseCheckBox from "@/components/common/BaseCheckBox.vue";
+  const instance = getCurrentInstance();
+  const axios = instance?.appContext.config.globalProperties.axios;
+  // 태그 검색 :: S
+  const tagSearch = () => {
+    let keyword = ref("");
+    // 선택된 태그
+    let selectedTag = ref<{ [key: string]: any }[]>([]);
+    // api로부터 조회된 태그 리스트
+    let tagList = ref<{ [key: string]: any }[]>([]);
+    // 선택된 태그 제거
+    const deleteTag = (id: number) => {
+      console.log("태그제거함수호출");
+      const findId: { [key: string]: any } = selectedTag.value.find(
+        (item: { [key: string]: any }) => {
+          return item.id === id;
+        }
+      ) as { [key: string]: any };
+      const idx = selectedTag.value.indexOf(findId);
+      const result = selectedTag.value.splice(idx, 1);
+    };
+    const selectTagFunc = (tag: { [key: string]: any }) => {
+      console.log("태그선택함수호출", tag);
+      selectedTag.value.push(tag);
+      keyword.value = "";
+      console.log(selectedTag.value, keyword.value);
+    };
+    const search = () => {
+      console.log("서치함수호출");
+      tagList.value = [
+        {
+          title: "일러스트",
+          id: 1,
+          works: "1,000",
+        },
+        {
+          title: "일러",
+          id: 2,
+          works: "1,100",
+        },
+        {
+          title: "일러스",
+          id: 3,
+          works: "1,200",
+        },
+      ];
+      // axios.post("", "").then((result: { [key: string]: any }) => {
+      //   console.log(result);
+      //   tagList.value = result.data;
+      // });
+    };
+    return { keyword, tagList, selectedTag, search, selectTagFunc, deleteTag };
+  };
+  // 태그 검색 :: E
   export default defineComponent({
     components: { BaseCheckBox, BaseSwitcherButton },
     setup() {
       console.log("setup");
-      const instance = getCurrentInstance();
-      const axios = instance?.appContext.config.globalProperties.axios;
       const conditionSet = ref<string[]>([]); // 사용조건 설정
       const open = ref(true); // 공개 여부
       const license = ref(true); // 타인사용허가 여부
       const activeBtn = ref(true); // 발급/미발급 여부
-      return { open, license, activeBtn, conditionSet };
+      return {
+        open,
+        license,
+        activeBtn,
+        conditionSet,
+        ...tagSearch(),
+      };
     },
   });
 </script>
@@ -98,10 +187,36 @@
       }
     }
     .tag {
+      .title {
+        margin-bottom: 14px;
+      }
+      .prefix {
+        display: inline-block;
+        width: 12px;
+      }
       .tag-input {
+        width: calc(100% - 12px);
         border: 0;
         font-size: 16px;
         outline: none;
+      }
+      .tag-wrap {
+        .tag-list {
+          margin-top: 16px;
+          .tag-info {
+            display: inline-block;
+            vertical-align: middle;
+            .works {
+              display: block;
+              font-size: 12px;
+              color: #79828a;
+              margin-top: 4px;
+            }
+          }
+          .tag-img {
+            margin-right: 16px;
+          }
+        }
       }
     }
     .is-open,
