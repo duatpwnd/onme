@@ -1,14 +1,16 @@
 <template>
-  <label class="container-checkbox">
-    <input
-      :id="fieldId"
-      @input="checkFunc()"
-      type="checkbox"
-      :checked="checked"
-    />
-    <span class="checkmark"></span>
-  </label>
-  <label :for="fieldId">{{ value }}</label>
+  <span class="base-checkbox">
+    <label class="container-checkbox">
+      <input
+        :id="fieldId"
+        @input="checkFunc()"
+        type="checkbox"
+        :checked="checked"
+      />
+      <span class="checkmark"></span>
+    </label>
+    <label :for="fieldId" class="field-id">{{ value }}</label>
+  </span>
 </template>
 <script lang="ts">
   import { defineComponent, computed, ref } from "vue";
@@ -24,7 +26,6 @@
       },
       fieldId: {
         type: String,
-        required: true,
       },
     },
     setup(props: { [key: string]: any }, context) {
@@ -44,6 +45,12 @@
   });
 </script>
 <style scoped lang="scss">
+  .container-checkbox {
+    margin-right: 12px;
+    .checkmark {
+      vertical-align: middle;
+    }
+  }
   input {
     display: none;
   }

@@ -23,7 +23,9 @@ const routes: Array<RouteRecordRaw> = [
     path: "/register",
     name: "Register",
     component: () =>
-      import(/* webpackChunkName: "Register" */ "../views/Register.vue"),
+      import(
+        /* webpackChunkName: "Register" */ "../views/CopyRightRegister.vue"
+      ),
   },
 ];
 
