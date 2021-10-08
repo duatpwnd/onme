@@ -14,3 +14,16 @@ app.config.errorHandler = (err, vm, info) => {
 app.config.warnHandler = (msg, vm, trace) => {
   console.log("경고:", msg, vm, trace);
 };
+axios.interceptors.request.use(
+  (config) => {
+    console.log("axios 요청전:", config);
+    return config;
+  },
+  (err) => {
+    console.log(err);
+  }
+);
+axios.interceptors.response.use((response) => {
+  console.log("axios 요청후:", response);
+  return response;
+});
