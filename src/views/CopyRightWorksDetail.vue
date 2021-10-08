@@ -89,7 +89,6 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         margin-left: 16px;
-        font-size: 16px;
         vertical-align: middle;
       }
       .sns-link {
@@ -169,7 +168,6 @@
     bottom: 0;
     width: 100%;
     button {
-      font-size: 16px;
       color: white;
       padding: 19px 0px;
     }
