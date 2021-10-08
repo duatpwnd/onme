@@ -25,7 +25,7 @@
     getCurrentInstance,
   } from "vue";
   export default defineComponent({
-    name: "Siginin",
+    name: "Signin",
     setup() {
       console.log("setup호출");
       const instance = getCurrentInstance();

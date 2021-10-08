@@ -7,6 +7,12 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "WorkFeed" */ "../views/WorkFeed.vue"),
   },
   {
+    path: "/search",
+    name: "Search",
+    component: () =>
+      import(/* webpackChunkName: "Search" */ "../views/Search.vue"),
+  },
+  {
     path: "/detail",
     name: "CopyRightWorksDetail",
     // route level code-splitting
