@@ -50,7 +50,7 @@
       <h2 class="title">타인사용허가</h2>
       <BaseSwitcherButton v-model="license" value="허용" fieldId="허용" />
     </div>
-    <div class="condition-set">
+    <div class="condition-set" v-show="license">
       <h2 class="title">사용조건 설정</h2>
       <BaseCheckBox
         v-model="conditionSet"
@@ -197,8 +197,6 @@
       .tag-input {
         width: calc(100% - 12px);
         border: 0;
-        font-size: 16px;
-        outline: none;
       }
       .tag-wrap {
         .tag-list {
