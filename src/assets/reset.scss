@@ -14,6 +14,7 @@ table,
 textarea {
   font-family: "AppleSDGothic", sans-serif;
   font-weight: 400;
+  font-size: 16px;
 }
 ul {
   li {
@@ -26,6 +27,7 @@ dt {
 a {
   text-decoration: none;
   color: black;
+  display: inline-block;
 }
 span {
   display: inline-block;
@@ -48,6 +50,7 @@ textarea {
 input {
   -webkit-appearance: none;
   -webkit-border-radius: 0;
+  outline: none;
 }
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

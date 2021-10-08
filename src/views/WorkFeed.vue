@@ -1,8 +1,13 @@
 <template>
   <div class="wrap">
-    <div>
+    <header>
       <h2>작품피드</h2>
-    </div>
+      <div class="btn-wrap">
+        <router-link class="add-btn" to="/register">추가</router-link>
+        <router-link class="search-btn" to="/">찾기</router-link>
+        <router-link class="profile-btn" to="/">프로필</router-link>
+      </div>
+    </header>
     <div class="feed">
       <div class="left-feed">
         <img src="@/assets/images/feed1.png" />
@@ -15,7 +20,11 @@
       </div>
     </div>
   </div>
-  <button class="scan-btn" @scroll="test" v-show="scanBtn.show"></button>
+  <router-link
+    class="scan-btn"
+    @scroll="test"
+    v-show="scanBtn.show"
+  ></router-link>
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, reactive } from "vue";
@@ -53,6 +62,37 @@
 <style scoped lang="scss">
   .wrap {
     padding: 40px 20px;
+    header {
+      position: relative;
+      .btn-wrap {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        height: 34px;
+        a {
+          vertical-align: middle;
+          text-indent: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+        .add-btn {
+          background: url("~@/assets/images/Vector.png") no-repeat center / 20px
+            20px;
+        }
+        .search-btn {
+          margin: 0 20px;
+          background: url("~@/assets/images/search.png") no-repeat center / 24px
+            24px;
+        }
+        .profile-btn {
+          background: url("~@/assets/images/my.png") no-repeat center / 30px
+            30px;
+          height: 30px;
+        }
+      }
+    }
     .feed {
       &:after {
         display: block;
