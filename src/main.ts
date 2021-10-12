@@ -4,11 +4,11 @@ import router from "./router";
 import store from "./store";
 import apiUrl from "@/assets/js/apiUrl";
 import axios from "axios";
+import { VueCookieNext } from "vue-cookie-next";
 const app = createApp(App);
-app.use(store).use(router).mount("#app");
+app.use(store).use(router).use(VueCookieNext).mount("#app");
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.apiUrl = apiUrl;
-console.log(process.env);
 app.config.errorHandler = (err, vm, info) => {
   console.log("에러:", err, "vm", vm, "info:", info);
 };
