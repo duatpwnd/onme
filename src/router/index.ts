@@ -43,6 +43,32 @@ const routes: Array<RouteRecordRaw> = [
     component: () =>
       import(/* webpackChunkName: "SignUp" */ "../views/SignUp.vue"),
   },
+  {
+    path: "/myPage",
+    name: "MyPage",
+    component: () =>
+      import(/* webpackChunkName: "Mypage" */ "../views/MyPage.vue"),
+  },
+  {
+    path: "/setting",
+    name: "Setting",
+    component: () =>
+      import(/* webpackChunkName: "Setting" */ "../views/Setting.vue"),
+  },
+  {
+    path: "/accountManage",
+    name: "AccountManage",
+    component: () =>
+      import(
+        /* webpackChunkName: "AccountManage" */ "../views/AccountManage.vue"
+      ),
+  },
+  {
+    path: "/withdrawal",
+    name: "Withdrawal",
+    component: () =>
+      import(/* webpackChunkName: "Withdrawal" */ "../views/Withdrawal.vue"),
+  },
 ];
 
 const router = createRouter({

@@ -6,9 +6,9 @@
   export default defineComponent({
     name: "Home",
     setup() {
-      console.log("setup호출");
+      console.log("App.uve::setup호출");
       onUpdated(() => {
-        console.log("updated 호출");
+        console.log("App.uve::updated 호출");
       });
     },
   });
@@ -16,4 +16,31 @@
 
 <style lang="scss">
   @import "@/assets/reset.scss";
+  body {
+    .wrap {
+      margin-top: 44px;
+      header {
+        height: 60px;
+        position: relative;
+        .back-btn {
+          position: absolute;
+          top: 0;
+          left: 20px;
+          bottom: 0;
+          margin: auto;
+          text-indent: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          width: 24px;
+          height: 30px;
+          background: url("~@/assets/images/back_btn.png") no-repeat center /
+            24px 24px;
+        }
+        .header-title {
+          font-size: 17px;
+          line-height: 60px;
+        }
+      }
+    }
+  }
 </style>

@@ -61,6 +61,7 @@ input:-webkit-autofill:active {
 /* select 화살표 없애기 */
 
 select {
+  outline: none;
   background: white;
   -webkit-appearance: none;
   -moz-appearance: none;
