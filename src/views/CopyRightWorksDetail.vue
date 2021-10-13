@@ -33,9 +33,9 @@
   <!-- 저작물 사용 조건 :: S -->
   <article class="service-condition">
     <h2 class="h2-title">저작물 사용조건</h2>
-    <span>저작권표시</span>
-    <span>비영리</span>
-    <span>변경금지</span>
+    <span class="notice-ico">저작권표시</span>
+    <span class="non-profit-ico">비영리</span>
+    <span class="no-change-ico">변경금지</span>
   </article>
   <!-- 저작물 사용 조건 :: E -->
 
@@ -120,13 +120,37 @@
   .service-condition {
     span {
       width: 50%;
+      padding-left: 52px;
+      box-sizing: border-box;
+      position: relative;
+      height: 36px;
+      line-height: 36px;
       &:not(:first-child) {
         margin-top: 18px;
       }
       &::before {
-        content: url("~@/assets/images/list_ico1.png");
         margin-right: 16px;
-        vertical-align: middle;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        margin: auto;
+        height: 36px;
+      }
+    }
+    .notice-ico {
+      &::before {
+        content: url("~@/assets/images/copyright_notice_ico.png");
+      }
+    }
+    .no-change-ico {
+      &::before {
+        content: url("~@/assets/images/no_change_ico.png");
+      }
+    }
+    .non-profit-ico {
+      &::before {
+        content: url("~@/assets/images/non_profit_ico.png");
       }
     }
   }
@@ -146,7 +170,6 @@
           margin-top: 18px;
         }
         &::before {
-          content: url("~@/assets/images/list_ico2.png");
           position: absolute;
           left: 20px;
         }

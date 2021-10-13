@@ -1,20 +1,40 @@
 <template>
   <div class="wrap">
-    <h1 class="logo">NOPY</h1>
+    <router-link to="/" class="logo">NOPY</router-link>
     <form class="login-form">
       <fieldset>
         <legend>로그인</legend>
-        <input type="text" class="user-id" placeholder="이메일" />
-        <input type="password" class="user-pw" placeholder="비밀번호" />
-        <button class="signin-btn">로그인</button>
+        <input
+          type="text"
+          v-model="userInput.userEmail"
+          @keyup="
+            userInput.userEmailValidation
+              ? (userInput.guideMsg1 = false)
+              : (userInput.guideMsg1 = true)
+          "
+          class="user-email"
+          placeholder="이메일 입력"
+        />
+        <p class="guide-msg" v-show="userInput.guideMsg1">
+          이메일을 다시 확인해 주세요.
+        </p>
+        <input
+          type="password"
+          v-model="userInput.userPw"
+          class="user-pw"
+          placeholder="비밀번호 입력"
+        />
+        <p class="guide-msg" v-show="userInput.guideMsg2">
+          입력하신 정보와 일치하는 계정이 없습니다.로그인 정보를 다시
+          확인해주세요.
+        </p>
+        <button type="button" class="signin-btn" @click="signInSubmit()">
+          로그인
+        </button>
       </fieldset>
     </form>
   </div>
-  <router-link to="/email" class="signup-email">이메일로 가입하기</router-link>
-  <div class="find">
-    <router-link to="/" class="find-email">이메일 찾기</router-link>
-    <router-link to="/">비밀번호 찾기</router-link>
-  </div>
+  <router-link to="/signUp" class="signup-email">이메일로 가입하기</router-link>
 </template>
 <script lang="ts">
   import {
@@ -23,16 +43,59 @@
     reactive,
     ref,
     getCurrentInstance,
+    computed,
   } from "vue";
+  import { useStore } from "vuex";
   export default defineComponent({
-    name: "Signin",
+    name: "SignIn",
     setup() {
       console.log("setup호출");
-      const instance = getCurrentInstance();
-      const axios = instance?.appContext.config.globalProperties.axios;
+      const globalProperties =
+        getCurrentInstance()?.appContext.config.globalProperties;
+      const axios = globalProperties?.axios;
+      const apiUrl = globalProperties?.apiUrl;
+      const cookie = globalProperties?.$cookie;
+      const store = globalProperties?.$store;
+      // 로그인 함수 :: S //
+      const signIn = () => {
+        console.log("로그인함수호출");
+        interface ModelType {
+          userEmail: string;
+          userPw: string;
+          userEmailValidation: boolean;
+          guideMsg1: boolean;
+          guideMsg2: boolean;
+        }
+        const regExp =
+          /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+        const userInput: ModelType = reactive({
+          userEmail: "",
+          userPw: "",
+          userEmailValidation: computed(() => regExp.test(userInput.userEmail)),
+          guideMsg1: false, // 이메일 유효성검사 통과 못했을때
+          guideMsg2: false, // 이메일 유효성검사는 통과했지만 아이디 또는 비밀번호가 틀렸을때
+        });
+        const signInSubmit = () => {
+          const body = {
+            email: userInput.userEmail,
+            password: userInput.userPw,
+          };
+          console.log(body);
+          axios
+            .post(apiUrl.signIn, JSON.stringify(body))
+            .then((result: any) => {
+              console.log("로그인결과:", result);
+              cookie.setCookie("userInfo", result.data);
+              store.commit("userStore/USER_INFO", result.data);
+            });
+        };
+        return { userInput, signInSubmit };
+      };
+      // 로그인 함수 :: E //
       onMounted(() => {
         console.log("onmounted호출");
       });
+      return { ...signIn() };
     },
   });
 </script>
@@ -59,6 +122,12 @@
       .user-pw {
         margin-top: 12px;
       }
+      .guide-msg {
+        color: #ef284c;
+        font-size: 12px;
+        margin-top: 8px;
+        margin-left: 20px;
+      }
       .signin-btn {
         background: black;
         color: white;
@@ -72,28 +141,12 @@
   }
   .signup-email {
     position: absolute;
-    bottom: 77px;
+    bottom: 0px;
     text-align: center;
     width: 100%;
     border: 1px solid #dbdfe1;
     border-right: 0;
     border-left: 0;
     padding: 28px 0;
-  }
-  .find {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 28px 0;
-    a {
-      font-size: 14px;
-      color: #79828a;
-      width: 50%;
-      text-align: center;
-    }
-    .find-email {
-      border-right: 1px solid #dbdfe1;
-      box-sizing: border-box;
-    }
   }
 </style>

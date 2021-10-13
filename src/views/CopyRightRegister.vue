@@ -1,5 +1,9 @@
 <template>
-  <main>
+  <div class="wrap">
+    <header>
+      <router-link to="/" class="back-btn">뒤로가기</router-link>
+      <h1 class="header-title">저작권 등록</h1>
+    </header>
     <img
       src="@/assets/images/register_img.png"
       class="representative-img"
@@ -87,7 +91,7 @@
       </div>
     </div>
     <button class="protect-btn">저작권 보호 시작</button>
-  </main>
+  </div>
 </template>
 <script lang="ts">
   import {
@@ -171,7 +175,10 @@
   });
 </script>
 <style scoped lang="scss">
-  main {
+  .wrap {
+    header {
+      text-align: center;
+    }
     .representative-img {
       width: 100%;
     }

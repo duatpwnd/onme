@@ -1,6 +1,6 @@
 <template>
   <span class="switch-btn">
-    <label class="field-id" :for="fieldId">{{ value }}</label>
+    <label class="field-id" :for="fieldId">{{ field }}</label>
     <label class="switch">
       <input
         type="checkbox"

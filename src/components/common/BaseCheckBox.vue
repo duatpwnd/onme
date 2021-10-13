@@ -9,7 +9,7 @@
       />
       <span class="checkmark"></span>
     </label>
-    <label :for="fieldId" class="field-id">{{ value }}</label>
+    <label :for="fieldId" class="field-id">{{ fieldId }}</label>
   </span>
 </template>
 <script lang="ts">
