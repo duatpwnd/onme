@@ -1,10 +1,16 @@
 <template>
+  <BaseBottomModal v-show="menu" @close="menu = false">
+    <template #button>
+      <router-link to="/myInfo">내 정보</router-link>
+      <router-link to="/setting" class="set-btn">설정</router-link>
+    </template>
+  </BaseBottomModal>
   <div class="wrap">
     <header>
       <router-link to="/" class="back-btn">뒤로가기</router-link>
       <div class="right-menu">
         <router-link class="add-btn" to="/register">추가</router-link>
-        <button class="menu-btn">메뉴</button>
+        <button class="menu-btn" @click="menu = true">메뉴</button>
       </div>
     </header>
     <!-- 유저 정보 :: S -->
@@ -34,16 +40,13 @@
   </div>
 </template>
 <script lang="ts">
-  import {
-    defineComponent,
-    onMounted,
-    reactive,
-    ref,
-    getCurrentInstance,
-  } from "vue";
-  import { useStore } from "vuex";
+  import { defineComponent, onMounted, ref, getCurrentInstance } from "vue";
+  import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
   export default defineComponent({
-    name: "HelloWorld",
+    name: "MyPage",
+    components: {
+      BaseBottomModal,
+    },
     setup() {
       console.log("setup호출");
       const globalProperties =
@@ -51,18 +54,66 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.store;
-
+      const menu = ref(false);
       onMounted(() => {
         console.log("onmounted호출");
       });
 
-      return {};
+      return { menu };
     },
   });
 </script>
 <style scoped lang="scss">
+  .mask {
+    a {
+      font-weight: 400;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      display: block;
+    }
+    .set-btn {
+      margin-top: 40px;
+    }
+  }
   .wrap {
     padding: 0 20px;
+    .mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      .modal {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        .close-area {
+          text-align: right;
+          padding-right: 24px;
+          padding-bottom: 24px;
+          .close-btn {
+            width: 21px;
+            height: 21px;
+            background: url("~@/assets/images/close_btn.png") no-repeat center /
+              21px 21px;
+          }
+        }
+        .nav-btn {
+          background: white;
+          padding: 70px 0;
+          a {
+            width: 100%;
+            text-align: center;
+            font-size: 24px;
+          }
+        }
+        .set-btn {
+          margin-top: 40px;
+        }
+      }
+    }
     header {
       position: sticky;
       &:after {
