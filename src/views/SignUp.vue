@@ -1,55 +1,50 @@
 <template>
-  <div class="wrap">
-    <header>
-      <router-link to="/signIn" class="back-btn">뒤로가기</router-link>
-      <h1 class="header-title">회원가입</h1>
-    </header>
-    <span><b>1</b>3</span>
-    {{ selected.length }}
-
-    <h2>NOPY<br />이용약관동의</h2>
-    <BaseCheckBox v-model="allSelect" value="all" fieldId="모두 동의" />
-    <BaseCheckBox
-      v-model="selected"
-      value="1"
-      fieldId="[필수] 서비스 이용약관 동의"
-    />
-    <BaseCheckBox
-      v-model="selected"
-      value="2"
-      fieldId="[필수] 개인 정보 수집 및 동의"
-    />
-    <BaseCheckBox
-      v-model="selected"
-      value="3"
-      fieldId="[선택] 마케팅 수신 정보 동의"
-    />
-  </div>
+  <header>
+    <button class="back-btn" @click="router.go(-1)">뒤로가기</button>
+    <h1 class="header-title">회원가입</h1>
+  </header>
+  <span class="step"
+    ><b>{{ step }}</b
+    >/3</span
+  >
+  <router-view />
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted, ref, watchEffect, watch } from "vue";
-  import BaseCheckBox from "@/components/common/BaseCheckBox.vue";
-
+  import { defineComponent, getCurrentInstance, watch, ref } from "vue";
+  import { useRoute } from "vue-router";
   export default defineComponent({
     name: "SignUp",
-    components: {
-      BaseCheckBox,
-    },
     setup() {
-      console.log("setup호출");
-      const allSelect = ref<string[]>([]);
-      const selected = ref<string[]>([]);
-      onMounted(() => {
-        console.log("onmounted호출");
-      });
-      return { allSelect, selected };
+      const globalProperties =
+        getCurrentInstance()?.appContext.config.globalProperties;
+      const route = useRoute() as any;
+      const router = globalProperties?.$router;
+      const step = ref(1);
+      watch(
+        () => route.name,
+        (curr, prev) => {
+          step.value = curr.split("Step")[1];
+        },
+        { immediate: true }
+      );
+      return { router, route, step };
     },
   });
 </script>
 <style scoped lang="scss">
-  .wrap {
-    header {
-      text-align: center;
+  header {
+    text-align: center;
+    .back-btn {
+      left: 20px;
+    }
+  }
+  .step {
+    color: #ccc;
+    margin-top: 52px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+    b {
+      color: #303538;
     }
   }
 </style>
