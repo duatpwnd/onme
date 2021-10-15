@@ -51,6 +51,9 @@
   .wrap {
     header {
       text-align: center;
+      .back-btn {
+        left: 20px;
+      }
     }
     .setting {
       .row {

@@ -1,4 +1,15 @@
 <template>
+  <BaseModal
+    v-show="isWithdrawal"
+    emphasize="정말 탈퇴 하실 건가요?"
+    contents="NOPY에서 활동한 모든 정보가 삭제됩니다."
+    :method="withdrawal"
+    @basemodal-close="
+      () => {
+        isWithdrawal = false;
+      }
+    "
+  ></BaseModal>
   <div class="wrap">
     <header>
       <router-link to="/setting" class="back-btn">뒤로가기</router-link>
@@ -12,26 +23,23 @@
       <select class="reason-select-box" v-model="reason">
         <option value="null" disabled>선택해주세요</option>
         <option value="1">서비스를 자주 이용안해요</option>
+        <option value="2">앱 오류가 있어요</option>
+        <option value="3">사용하기 불편해요</option>
+        <option value="4">기타</option>
       </select>
     </div>
-    <button :class="[{ active: reason != null }, 'withdrawal-btn']">
+    <button class="withdrawal-btn" v-if="reason == null">회원탈퇴</button>
+    <button class="withdrawal-btn active" v-else @click="isWithdrawal = true">
       회원탈퇴
     </button>
   </div>
 </template>
 <script lang="ts">
-  import {
-    defineComponent,
-    onMounted,
-    reactive,
-    ref,
-    getCurrentInstance,
-  } from "vue";
-  import { useStore } from "vuex";
-
+  import { defineComponent, onMounted, ref, getCurrentInstance } from "vue";
+  import BaseModal from "@/components/common/BaseModal.vue";
   export default defineComponent({
-    name: "AccountManage",
-    components: {},
+    name: "Withdrawal",
+    components: { BaseModal },
     setup() {
       console.log("setup호출");
       const globalProperties =
@@ -40,20 +48,27 @@
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.store;
       const reason = ref(null);
+      const isWithdrawal = ref(false);
+      const withdrawal = () => {
+        axios.delete(apiUrl.withdrawal).then((result: any) => {
+          console.log("탈퇴결과:", result);
+        });
+      };
       onMounted(() => {
         console.log("onmounted호출");
       });
-      return { reason };
+      return { reason, isWithdrawal, withdrawal };
     },
   });
 </script>
 <style scoped lang="scss">
   .wrap {
+    padding: 0 20px;
     header {
       text-align: center;
     }
     .contents {
-      padding: 40px 20px;
+      padding: 40px 0;
       .msg1 {
         font-size: 24px;
         font-weight: 700;
