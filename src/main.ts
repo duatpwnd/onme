@@ -7,9 +7,9 @@ import axios from "axios";
 import { VueCookieNext } from "vue-cookie-next";
 import * as Sentry from "@sentry/vue";
 import { Integrations } from "@sentry/tracing";
-
+import globalPlugin from "@/plugin/globalPlugin";
 const app = createApp(App);
-app.use(store).use(router).use(VueCookieNext).mount("#app");
+app.use(store).use(router).use(VueCookieNext).use(globalPlugin).mount("#app");
 Sentry.init({
   environment: process.env.NODE_ENV,
   app,
@@ -27,12 +27,12 @@ Sentry.init({
 });
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.apiUrl = apiUrl;
-app.config.errorHandler = (err, vm, info) => {
-  console.log("에러:", err, "vm", vm, "info:", info);
-};
-app.config.warnHandler = (msg, vm, trace) => {
-  console.log("경고:", msg, vm, trace);
-};
+// app.config.errorHandler = (err, vm, info) => {
+//   console.log("에러:", err, "vm", vm, "info:", info);
+// };
+// app.config.warnHandler = (msg, vm, trace) => {
+//   console.log("경고:", msg, vm, trace);
+// };
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.interceptors.request.use(
   (config) => {
