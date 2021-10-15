@@ -1,26 +1,31 @@
 <template>
+  <BaseModal
+    v-show="isSignout"
+    emphasize="로그아웃"
+    contents="로그아웃 하시겠습니까?"
+    :method="signout"
+    @basemodal-close="
+      () => {
+        isSignout = false;
+      }
+    "
+  ></BaseModal>
   <div class="wrap">
     <header>
       <router-link to="/setting" class="back-btn">뒤로가기</router-link>
       <h1 class="header-title">계정관리</h1>
     </header>
-    <router-link to="/accountManage" class="row">로그아웃</router-link>
+    <button class="row" @click="isSignout = true">로그아웃</button>
     <router-link to="/withdrawal" class="row">회원탈퇴</router-link>
   </div>
 </template>
 <script lang="ts">
-  import {
-    defineComponent,
-    onMounted,
-    reactive,
-    ref,
-    getCurrentInstance,
-  } from "vue";
-  import { useStore } from "vuex";
+  import { defineComponent, onMounted, getCurrentInstance, ref } from "vue";
+  import BaseModal from "@/components/common/BaseModal.vue";
 
   export default defineComponent({
     name: "AccountManage",
-    components: {},
+    components: { BaseModal },
     setup() {
       console.log("setup호출");
       const globalProperties =
@@ -28,9 +33,14 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.store;
+      const isSignout = ref(false);
+      const signout = () => {
+        console.log("signout");
+      };
       onMounted(() => {
         console.log("onmounted호출");
       });
+      return { isSignout, signout };
     },
   });
 </script>
@@ -38,6 +48,9 @@
   .wrap {
     header {
       text-align: center;
+      .back-btn {
+        left: 20px;
+      }
     }
     .row {
       border-bottom: 1px solid #f2f4f5;
@@ -46,6 +59,10 @@
       box-sizing: border-box;
       background: url("~@/assets/images/arrow_ico.png") no-repeat right 20px
         center / 7px 13px;
+    }
+    button {
+      font-weight: 400;
+      text-align: left;
     }
   }
 </style>
