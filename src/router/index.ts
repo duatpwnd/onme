@@ -7,6 +7,12 @@ const routes: Array<RouteRecordRaw> = [
       import(/* webpackChunkName: "WorkFeed" */ "../views/WorkFeed.vue"),
   },
   {
+    path: "/myInfo",
+    name: "MyInfo",
+    component: () =>
+      import(/* webpackChunkName: "MyInfo" */ "../views/MyInfo.vue"),
+  },
+  {
     path: "/search",
     name: "Search",
     component: () =>
@@ -42,6 +48,23 @@ const routes: Array<RouteRecordRaw> = [
     name: "SignUp",
     component: () =>
       import(/* webpackChunkName: "SignUp" */ "../views/SignUp.vue"),
+    children: [
+      {
+        path: "step1",
+        component: () => import("@/views/signup/Step1.vue"),
+        name: "Step1",
+      },
+      {
+        path: "step2",
+        component: () => import("@/views/signup/Step2.vue"),
+        name: "Step2",
+      },
+      {
+        path: "step3",
+        component: () => import("@/views/signup/Step3.vue"),
+        name: "Step3",
+      },
+    ],
   },
   {
     path: "/myPage",
