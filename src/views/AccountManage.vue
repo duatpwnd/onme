@@ -3,7 +3,7 @@
     v-show="isSignout"
     emphasize="로그아웃"
     contents="로그아웃 하시겠습니까?"
-    :method="signout"
+    :method="signOut"
     @basemodal-close="
       () => {
         isSignout = false;
@@ -30,17 +30,13 @@
       console.log("setup호출");
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
-      const axios = globalProperties?.axios;
-      const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
+      const signOut = globalProperties?.$signOut;
       const isSignout = ref(false);
-      const signout = () => {
-        console.log("signout");
-      };
+
       onMounted(() => {
         console.log("onmounted호출");
       });
-      return { isSignout, signout };
+      return { isSignout, signOut };
     },
   });
 </script>

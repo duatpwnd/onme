@@ -6,7 +6,7 @@
         <legend>회원가입</legend>
         <input
           type="text"
-          v-model="userEmail"
+          v-on:input="userEmail = $event.target.value"
           class="user-email"
           placeholder="이메일 입력"
         />
@@ -20,7 +20,7 @@
         <div class="user-pw">
           <input
             :type="show.pw1 ? 'text' : 'password'"
-            v-model="userPw1"
+            v-on:input="userPw1 = $event.target.value"
             placeholder="비밀번호 입력"
           />
           <img
@@ -39,7 +39,7 @@
         >
           <input
             :type="show.pw2 ? 'text' : 'password'"
-            v-model="userPw2"
+            v-on:input="userPw2 = $event.target.value"
             placeholder="비밀번호 재입력"
           />
           <img
@@ -63,6 +63,7 @@
         >
           비밀번호가 일치하지 않습니다.
         </p>
+        <p class="guide-msg">{{ errorMessage }}</p>
       </fieldset>
     </form>
   </div>
@@ -104,7 +105,7 @@
     const emailRegExp =
       /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
     const email = reactive({
-      error: computed(() => emailRegExp.test(userEmail.value)),
+      error: computed(() => emailRegExp.test(userEmail.value.trim())),
     });
     return { userEmail, email };
   };
@@ -135,37 +136,40 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const route = globalProperties?.$route;
+      const router = globalProperties?.$router;
+      const emitter = globalProperties?.emitter;
+      const cookie = globalProperties?.$cookie;
+      const store = globalProperties?.$store;
+      const errorMessage = ref("");
       const signUpSubmit = (email: string, pw: string) => {
-        let agree;
-        if (route.query == 2) {
-          agree = {
-            is_terms_of_service: true,
-            is_personal_information_collection: true,
-            is_marketing_receive: false,
-          };
-        } else {
-          agree = {
-            is_terms_of_service: true,
-            is_personal_information_collection: true,
-            is_marketing_receive: true,
-          };
-        }
         const body = {
-          ...agree,
+          is_service: true,
+          is_information: true,
+          is_marketing: route.query == 2 ? false : true,
           username: route.query.name,
           email: email,
           password: pw,
         };
         console.log("바디:", body);
-        axios.post(apiUrl.signUp, JSON.stringify(body)).then((result: any) => {
-          console.log("회원가입결과:", result);
-        });
+        axios
+          .post(apiUrl.signUp, body)
+          .then((result: any) => {
+            console.log("회원가입결과:", result);
+            cookie.setCookie("userInfo", result.data.data);
+            store.commit("userStore/USER_INFO", result.data.data);
+            router.push("/");
+          })
+          .catch((err: any) => {
+            console.log("vvv,", err.data);
+            errorMessage.value = err.data.message;
+          });
       };
       return {
         signUpSubmit,
         ...emailCheck(),
         ...passwordCheck(),
         ...showPassword(),
+        errorMessage,
       };
     },
   });
@@ -175,7 +179,7 @@
     height: 100%;
   }
   .wrap {
-    padding: 0 20px 226px;
+    padding: 0 20px;
     .signup-form {
       margin-top: 32px;
       input {
@@ -210,6 +214,9 @@
   }
   .signup-btn {
     color: white;
+    position: absolute;
+    left: 0;
+    bottom: 0;
     background: #b8bfc4;
     text-align: center;
     width: 100%;

@@ -1,10 +1,22 @@
 <template>
-  <img
-    src="@/assets/images/example.png"
-    class="representative-img"
-    alt="대표이미지"
-    title="대표이미지"
-  />
+  <BaseBottomModal v-show="menu" @close="menu = false">
+    <template #button>
+      <router-link to="/register">내용수정</router-link>
+      <button class="delete-btn">삭제</button>
+    </template>
+  </BaseBottomModal>
+  <div class="background">
+    <img
+      src="@/assets/images/example.png"
+      class="representative-img"
+      alt="대표이미지"
+      title="대표이미지"
+    />
+    <div class="btn-wrap">
+      <button class="menu-btn" @click="menu = true"></button>
+      <button class="close-btn"></button>
+    </div>
+  </div>
   <!-- 유저 정보 :: S -->
   <div class="user-info">
     <div class="user-intro">
@@ -13,29 +25,35 @@
         alt="유저프로필"
         title="유저프로필"
       />
-      <span class="user-name">파인아트작가</span>
-      <span class="sns-link">
-        <img src="@/assets/images/facebook_ico1.png" class="ico1" />
-        <img src="@/assets/images/facebook_ico2.png" class="ico2" />
-      </span>
+      <span class="user-name">{{ detailInfo.post_name }}</span>
     </div>
     <div class="tag-list">
-      <span class="tag">#일러스트</span>
-      <span class="tag">#파인아트</span>
-      <span class="tag">#북아트</span>
-      <span class="tag">#일러스트4</span>
-      <span class="tag">#일러스트5</span>
-      <span class="tag">#일러스트트트트트트트</span>
+      <span class="tag" v-for="(tag, index) in detailInfo.tags" :key="index"
+        >#{{ tag }}</span
+      >
     </div>
   </div>
   <!-- 유저 정보 :: E -->
 
   <!-- 저작물 사용 조건 :: S -->
   <article class="service-condition">
-    <h2 class="h2-title">저작물 사용조건</h2>
-    <span class="notice-ico">저작권표시</span>
-    <span class="non-profit-ico">비영리</span>
-    <span class="no-change-ico">변경금지</span>
+    <h2 class="h2-title">
+      {{ detailInfo.is_usable ? "작품 사용 가이드" : "작품 사용금지" }}
+    </h2>
+    <span class="notice-ico" v-if="detailInfo.post_copyrights.is_copyright"
+      >저작권표시</span
+    >
+    <span class="non-profit-ico" v-if="detailInfo.post_copyrights.is_no_profit"
+      >비영리</span
+    >
+    <span class="no-change-ico" v-if="detailInfo.post_copyrights.is_no_change"
+      >변경금지</span
+    >
+    <span
+      class="change-permission-ico"
+      v-if="detailInfo.post_copyrights.is_conditional_change"
+      >변경금지</span
+    >
   </article>
   <!-- 저작물 사용 조건 :: E -->
 
@@ -58,25 +76,84 @@
   </article>
   <!-- 저작물 가이드 :: E -->
   <div class="fixed-btn">
-    <button class="copy-btn">출처복사</button>
+    <button class="copy-btn" v-clipboard:copy="url">출처복사</button>
     <button class="download-btn">다운로드</button>
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted } from "vue";
+  import {
+    defineComponent,
+    ref,
+    getCurrentInstance,
+    reactive,
+    toRefs,
+  } from "vue";
+  import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
   export default defineComponent({
     name: "CopyRightWorksDetail",
+    components: {
+      BaseBottomModal,
+    },
     setup() {
       console.log("setup호출");
-      onMounted(() => {
-        console.log("onmounted호출");
-      });
+      const globalProperties =
+        getCurrentInstance()?.appContext.config.globalProperties;
+      const axios = globalProperties?.axios;
+      const apiUrl = globalProperties?.apiUrl;
+      const route = globalProperties?.$route;
+      const url = window.document.location.href;
+      console.log(url);
+      const menu = ref(false);
+      let res = reactive({ detailInfo: {} });
+      const getDetailList = (id: number) => {
+        axios.get(apiUrl.feedList + `/${id}`).then((result: any) => {
+          console.log("작품상세조회 결과:", result.data.data);
+          res.detailInfo = result.data.data;
+        });
+      };
+      getDetailList(route.query.id);
+      const { detailInfo } = toRefs(res);
+      return { menu, res, detailInfo, url };
     },
   });
 </script>
 <style scoped lang="scss">
-  .representative-img {
-    width: 100%;
+  .mask {
+    button,
+    a {
+      font-weight: 400;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      display: block;
+    }
+    .delete-btn {
+      margin-top: 40px;
+    }
+  }
+  .background {
+    position: relative;
+    .representative-img {
+      width: 100%;
+    }
+    .btn-wrap {
+      position: absolute;
+      top: 56px;
+      right: 20px;
+      .menu-btn {
+        width: 36px;
+        height: 36px;
+        margin-right: 24px;
+        background: url("~@/assets/images/menu_btn1.png") no-repeat center /
+          36px 36px;
+      }
+      .close-btn {
+        width: 36px;
+        height: 36px;
+        background: url("~@/assets/images/close_btn1.png") no-repeat center /
+          36px 36px;
+      }
+    }
   }
   .user-info {
     padding: 32px 20px;
@@ -109,8 +186,9 @@
         margin-top: 8px;
         padding: 10px 8px;
         margin-right: 8px;
-        color: white;
-        background: black;
+        color: #525a61;
+        background: #f2f4f5;
+        border: 1px solid #e6e8eb;
         border-radius: 5px;
         font-size: 12px;
         text-align: center;
@@ -151,6 +229,11 @@
     .non-profit-ico {
       &::before {
         content: url("~@/assets/images/non_profit_ico.png");
+      }
+    }
+    .change-permission-ico {
+      &::before {
+        content: url("~@/assets/images/change_permission_ico.png");
       }
     }
   }

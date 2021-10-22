@@ -1,15 +1,35 @@
 <template>
+  <lottie-player
+    v-if="splash"
+    class="lottie-player"
+    :src="require('@/assets/json/splash.json')"
+    speed="1"
+    autoplay
+    @complete="
+      () => {
+        splash = false;
+      }
+    "
+  />
   <router-view />
 </template>
 <script lang="ts">
-  import { computed, defineComponent, onUpdated, ref } from "vue";
+  import { defineComponent, getCurrentInstance, ref } from "vue";
+  import "@lottiefiles/lottie-player";
   export default defineComponent({
     name: "Home",
     setup() {
-      console.log("App.uve::setup호출");
-      onUpdated(() => {
-        console.log("App.uve::updated 호출");
-      });
+      const globalProperties =
+        getCurrentInstance()?.appContext.config.globalProperties;
+      const cookie = globalProperties?.$cookie;
+      const store = globalProperties?.$store;
+      const userInfo = cookie.getCookie("userInfo");
+      const splash = ref(true);
+      if (userInfo != null) {
+        store.commit("userStore/USER_INFO", userInfo);
+      }
+
+      return { splash };
     },
   });
 </script>
@@ -17,6 +37,15 @@
 <style lang="scss">
   @import "@/assets/reset.scss";
   body {
+    .lottie-player {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: white;
+      z-index: 1;
+    }
     header {
       height: 60px;
       position: relative;

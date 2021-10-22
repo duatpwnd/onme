@@ -6,15 +6,15 @@
       v-on:input="
         name = $event.target.value;
         debounce(() => {
-          test();
+          checkNickname();
         });
       "
       class="name-input"
       placeholder="이름"
       maxlength="20"
     />
-    <p class="alert-msg" v-show="regExp == false">
-      20자 이내 영문(a b c), 숫자만 사용할 수 있습니다.
+    <p class="alert-msg" v-show="isActive == false">
+      {{ errorMessage }}
     </p>
     <p class="guide-msg">
       작가님의 알려진 이름, 필명을 사용하여 사람들이 작가님의 계정을 찾을 수
@@ -22,8 +22,8 @@
     </p>
   </div>
   <router-link
-    v-if="regExp && name.trim().length > 0"
     class="next active"
+    v-if="isActive"
     :to="{
       path: '/signup/step3',
       query: { name: name, agree: query.agree },
@@ -49,26 +49,30 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const query = globalProperties?.$route.query;
-      const name = ref("");
-      const regExp = computed(() => /^[a-zA-Z]*$/.test(name.value));
+      const name = ref(""); // 작가이름
+      const errorMessage = ref(""); // 에러메시지
+      const isActive = ref(false);
+      // const regExp = computed(() => /^[a-zA-Z]*$/.test(name.value));
       const debounce = globalProperties?.$debounce();
-      // const createDebounce = () => {
-      //   let timeout = null || 1;
-      //   return (fnc: () => void) => {
-      //     console.log(fnc);
-      //     clearTimeout(timeout);
-      //     timeout = setTimeout(() => {
-      //       fnc();
-      //     }, 800);
-      //   };
-      // };
-      const test = () => {
-        console.log("test");
+      const checkNickname = () => {
+        console.log("이름:", name);
+
+        axios
+          .post(apiUrl.checkNickname, { username: name.value })
+          .then((result: any) => {
+            console.log("유저닉네임결과:", result);
+            isActive.value = true;
+          })
+          .catch((err: any) => {
+            console.log("중복결과:", err);
+            isActive.value = false;
+            errorMessage.value = err.data.message;
+          });
       };
       onMounted(() => {
         console.log("onmounted호출");
       });
-      return { name, regExp, query, debounce, test };
+      return { name, query, debounce, checkNickname, errorMessage, isActive };
     },
   });
 </script>

@@ -21,11 +21,11 @@
           alt="유저프로필"
           title="유저프로필"
         />
-        <span class="user-name">파인아트작가</span>
-        <span class="sns-link">
+        <span class="user-name">{{ userInfo.data.username }}</span>
+        <!-- <span class="sns-link">
           <img src="@/assets/images/facebook_ico1.png" class="ico1" />
           <img src="@/assets/images/facebook_ico2.png" class="ico2" />
-        </span>
+        </span> -->
       </div>
       <p class="guide-msg"><strong>0개</strong>의 자산을<br />보호중입니다.</p>
     </div>
@@ -40,7 +40,13 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted, ref, getCurrentInstance } from "vue";
+  import {
+    defineComponent,
+    onMounted,
+    ref,
+    getCurrentInstance,
+    reactive,
+  } from "vue";
   import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
   export default defineComponent({
     name: "MyPage",
@@ -48,18 +54,24 @@
       BaseBottomModal,
     },
     setup() {
-      console.log("setup호출");
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
       const menu = ref(false);
+      let userInfo = reactive({ data: "" });
+      const getMyInfo = () => {
+        axios.get(apiUrl.getMyInfo).then((result: any) => {
+          console.log("나의페이지조회:", result.data.data);
+          userInfo.data = result.data.data;
+        });
+      };
+      getMyInfo();
       onMounted(() => {
         console.log("onmounted호출");
       });
 
-      return { menu };
+      return { menu, userInfo };
     },
   });
 </script>

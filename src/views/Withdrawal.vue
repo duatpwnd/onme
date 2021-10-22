@@ -1,12 +1,12 @@
 <template>
   <BaseModal
-    v-show="isWithdrawal"
+    v-show="iswithdraw"
     emphasize="정말 탈퇴 하실 건가요?"
     contents="NOPY에서 활동한 모든 정보가 삭제됩니다."
-    :method="withdrawal"
+    :method="withdraw"
     @basemodal-close="
       () => {
-        isWithdrawal = false;
+        iswithdraw = false;
       }
     "
   ></BaseModal>
@@ -22,14 +22,14 @@
       <p class="msg2">탈퇴하시는 이유를 알려주세요.</p>
       <select class="reason-select-box" v-model="reason">
         <option value="null" disabled>선택해주세요</option>
-        <option value="1">서비스를 자주 이용안해요</option>
-        <option value="2">앱 오류가 있어요</option>
-        <option value="3">사용하기 불편해요</option>
-        <option value="4">기타</option>
+        <option value="SERVICE">서비스를 자주 이용안해요</option>
+        <option value="APP_ERROR">앱 오류가 있어요</option>
+        <option value="UNCOMFORTABLE">사용하기 불편해요</option>
+        <option value="ETC">기타</option>
       </select>
     </div>
     <button class="withdrawal-btn" v-if="reason == null">회원탈퇴</button>
-    <button class="withdrawal-btn active" v-else @click="isWithdrawal = true">
+    <button class="withdrawal-btn active" v-else @click="iswithdraw = true">
       회원탈퇴
     </button>
   </div>
@@ -46,18 +46,24 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
+      const signOut = globalProperties?.$signOut;
       const reason = ref(null);
-      const isWithdrawal = ref(false);
-      const withdrawal = () => {
-        axios.delete(apiUrl.withdrawal).then((result: any) => {
-          console.log("탈퇴결과:", result);
-        });
+      const iswithdraw = ref(false);
+      const withdraw = () => {
+        console.log(reason.value);
+        axios
+          .delete(apiUrl.withdraw, {
+            withdraw_reason: reason.value,
+          })
+          .then((result: any) => {
+            console.log("탈퇴결과:", result);
+            signOut();
+          });
       };
       onMounted(() => {
         console.log("onmounted호출");
       });
-      return { reason, isWithdrawal, withdrawal };
+      return { reason, iswithdraw, withdraw };
     },
   });
 </script>

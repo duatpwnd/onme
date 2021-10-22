@@ -6,10 +6,17 @@ import apiUrl from "@/assets/js/apiUrl";
 import axios from "axios";
 import { VueCookieNext } from "vue-cookie-next";
 import * as Sentry from "@sentry/vue";
+import mitt from "mitt";
 import { Integrations } from "@sentry/tracing";
 import globalPlugin from "@/plugin/globalPlugin";
+import VueClipboard from "vue3-clipboard";
 const app = createApp(App);
+const emitter = mitt();
 app.use(store).use(router).use(VueCookieNext).use(globalPlugin).mount("#app");
+app.use(VueClipboard, {
+  autoSetContainer: true,
+  appendToBody: true,
+});
 Sentry.init({
   environment: process.env.NODE_ENV,
   app,
@@ -27,6 +34,7 @@ Sentry.init({
 });
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.apiUrl = apiUrl;
+app.config.globalProperties.emitter = emitter;
 // app.config.errorHandler = (err, vm, info) => {
 //   console.log("에러:", err, "vm", vm, "info:", info);
 // };
@@ -35,15 +43,29 @@ app.config.globalProperties.apiUrl = apiUrl;
 // };
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.interceptors.request.use(
-  (config) => {
-    console.log("axios 요청전:", config);
+  (config: any) => {
+    if (VueCookieNext.getCookie("userInfo") != null) {
+      config.headers.Authorization =
+        "Token " + VueCookieNext.getCookie("userInfo").token;
+      config.headers.common["Authorization"] =
+        "Token " + VueCookieNext.getCookie("userInfo").token;
+    }
     return config;
   },
-  (err) => {
-    console.log(err);
+  (error) => {
+    return error;
   }
 );
-axios.interceptors.response.use((response) => {
-  console.log("axios 요청후:", response);
-  return response;
-});
+axios.interceptors.response.use(
+  (response) => {
+    console.log("요청후:", response);
+    return response;
+  },
+  (err: any) => {
+    console.log("요청후에러:", err.response);
+    return Promise.reject(err.response);
+    // if (err.response.status == 403) {
+    //   app.config.globalProperties.$signOut();
+    // }
+  }
+);

@@ -101,22 +101,19 @@
 </script>
 <style scoped lang="scss">
   .wrap {
-    padding: 0 20px;
-    header {
-      height: unset;
-      .back-btn {
-        position: unset;
-        vertical-align: middle;
-      }
-    }
+    padding: 20px;
     .search-area {
       background: #f2f4f5;
       padding: 12px 20px;
       border-radius: 8px;
-      margin-left: 24px;
-      width: calc(100% - 48px);
+      width: calc(100% - 46px);
       box-sizing: border-box;
-      display: inline-block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      height: 48px;
       .search-input {
         width: calc(100% - 24px);
         border: 0;

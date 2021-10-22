@@ -7,7 +7,7 @@
     <div class="setting">
       <div class="row">
         서비스 이용 알림
-        <BaseSwitcherButton v-model="open" value="공개" />
+        <BaseSwitcherButton v-model="isShow" value="공개" />
       </div>
       <router-link to="/accountManage" class="row account-manage"
         >계정관리</router-link
@@ -35,15 +35,8 @@
       BaseSwitcherButton,
     },
     setup() {
-      console.log("setup호출");
-      const globalProperties =
-        getCurrentInstance()?.appContext.config.globalProperties;
-      const axios = globalProperties?.axios;
-      const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
-      onMounted(() => {
-        console.log("onmounted호출");
-      });
+      const isShow = ref(true);
+      return { isShow };
     },
   });
 </script>

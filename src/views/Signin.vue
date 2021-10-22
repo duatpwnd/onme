@@ -1,6 +1,11 @@
 <template>
   <div class="wrap">
-    <router-link to="/" class="logo">NOPY</router-link>
+    <header>
+      <router-link to="/" class="back-btn">뒤로가기</router-link>
+    </header>
+    <h1 class="logo">
+      <img src="@/assets/images/logo.png" alt="nopy" title="nopy" />
+    </h1>
     <form class="login-form">
       <fieldset>
         <legend>로그인</legend>
@@ -24,17 +29,20 @@
           class="user-pw"
           placeholder="비밀번호 입력"
         />
-        <p class="guide-msg" v-show="userInput.guideMsg2">
-          입력하신 정보와 일치하는 계정이 없습니다.로그인 정보를 다시
-          확인해주세요.
+        <p class="guide-msg">
+          {{ userInput.guideMsg2 }}
         </p>
         <button type="button" class="signin-btn" @click="signInSubmit()">
           로그인
         </button>
       </fieldset>
     </form>
+    <h2 class="signin-title">SNS 간편 로그인</h2>
+    <button class="apple-signin-btn">애플로그인</button>
   </div>
-  <router-link to="/signUp" class="signup-email">이메일로 가입하기</router-link>
+  <router-link to="/signUp/step1" class="signup-email"
+    >이메일로 가입하기</router-link
+  >
 </template>
 <script lang="ts">
   import {
@@ -56,58 +64,64 @@
       const apiUrl = globalProperties?.apiUrl;
       const cookie = globalProperties?.$cookie;
       const store = globalProperties?.$store;
+      const router = globalProperties?.$router;
       // 로그인 함수 :: S //
-      const signIn = () => {
-        console.log("로그인함수호출");
-        interface ModelType {
-          userEmail: string;
-          userPw: string;
-          userEmailValidation: boolean;
-          guideMsg1: boolean;
-          guideMsg2: boolean;
-        }
-        const regExp =
-          /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-        const userInput: ModelType = reactive({
-          userEmail: "",
-          userPw: "",
-          userEmailValidation: computed(() => regExp.test(userInput.userEmail)),
-          guideMsg1: false, // 이메일 유효성검사 통과 못했을때
-          guideMsg2: false, // 이메일 유효성검사는 통과했지만 아이디 또는 비밀번호가 틀렸을때
-        });
-        const signInSubmit = () => {
-          const body = {
-            email: userInput.userEmail,
-            password: userInput.userPw,
-          };
-          console.log(body);
-          axios
-            .post(apiUrl.signIn, JSON.stringify(body))
-            .then((result: any) => {
-              console.log("로그인결과:", result);
-              cookie.setCookie("userInfo", result.data);
-              store.commit("userStore/USER_INFO", result.data);
-            });
+      interface ModelType {
+        userEmail: string;
+        userPw: string;
+        userEmailValidation: boolean;
+        guideMsg1: boolean;
+        guideMsg2: string;
+      }
+      const regExp =
+        /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+      const userInput: ModelType = reactive({
+        userEmail: "",
+        userPw: "",
+        userEmailValidation: computed(() => regExp.test(userInput.userEmail)),
+        guideMsg1: false, // 이메일 유효성검사 통과 못했을때
+        guideMsg2: "", // 이메일 유효성검사는 통과했지만 아이디 또는 비밀번호가 틀렸을때
+      });
+      const signInSubmit = () => {
+        const body = {
+          email: userInput.userEmail,
+          password: userInput.userPw,
         };
+        axios
+          .post(apiUrl.signIn, body)
+          .then((result: any) => {
+            console.log("로그인결과:", result);
+            cookie.setCookie("userInfo", result.data.data);
+            store.commit("userStore/USER_INFO", result.data.data);
+            router.push("/");
+          })
+          .catch((err: any) => {
+            console.log(err);
+            userInput.guideMsg2 = err.data.message;
+          });
+
         return { userInput, signInSubmit };
       };
       // 로그인 함수 :: E //
       onMounted(() => {
         console.log("onmounted호출");
       });
-      return { ...signIn() };
+      return { userInput, signInSubmit };
     },
   });
 </script>
 <style scoped lang="scss">
   :global(#app) {
     height: 100%;
-    overflow: hidden;
   }
   .wrap {
     padding: 20px;
+    height: 100%;
+    box-sizing: border-box;
     .logo {
       text-align: center;
+      margin-top: 40px;
+      margin-bottom: 32px;
     }
     .login-form {
       margin-top: 20px;
@@ -138,10 +152,24 @@
         border-radius: 4px;
       }
     }
+    .signin-title {
+      margin-top: 64px;
+      font-size: 18px;
+      text-align: center;
+      color: #303538;
+    }
+    .apple-signin-btn {
+      margin-top: 24px;
+      text-indent: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      height: 52px;
+      background: url("~@/assets/images/sns_signin_apple.png") no-repeat center /
+        52px 52px;
+    }
   }
   .signup-email {
-    position: absolute;
-    bottom: 0px;
     text-align: center;
     width: 100%;
     border: 1px solid #dbdfe1;
