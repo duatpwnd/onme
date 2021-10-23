@@ -13,15 +13,14 @@
         >
       </div>
     </header>
-    <infinite-scroll @infinite-scroll="loadDataFromServer" :noResult="noResult">
-      <div class="masnory">
-        <div class="mItem" v-for="(list, index) in feedList" :key="index">
-          <router-link :to="{ path: '/detail', query: { id: list.id } }">
-            <img :src="list.original_images[0].image" />
-          </router-link>
-        </div>
+    <div class="masnory">
+      <div class="mItem" v-for="(list, index) in feedList" :key="index">
+        <router-link :to="{ path: '/detail', query: { id: list.id } }">
+          <img :src="list.original_images[0].image" />
+        </router-link>
       </div>
-    </infinite-scroll>
+    </div>
+    <div class="scroll-detecting" ref="detector"></div>
   </div>
   <button class="scan-btn" v-show="scanBtn.show"></button>
 </template>
@@ -33,9 +32,8 @@
     ref,
     getCurrentInstance,
     computed,
-    isProxy,
   } from "vue";
-  import InfiniteScroll from "infinite-loading-vue3";
+
   // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: S
   const showScanBtn = () => {
     const scanBtn = reactive({
@@ -56,7 +54,6 @@
 
   export default defineComponent({
     name: "WorkFeed",
-    components: { InfiniteScroll },
     setup(props, context) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
@@ -68,39 +65,45 @@
       const feedList = ref<{ [key: string]: any }>([]);
       const alarm = ref(false);
       const page = ref(1);
-      const noResult = ref(false);
+      const detector = ref(null);
       const isSignin =
         userInfo.value.id == undefined
           ? require("@/assets/images/signout_profile_img1.png")
           : require("@/assets/images/signin_profile_img1.png");
-
-      const loadDataFromServer = async () => {
-        console.log("getlist호출");
-        try {
-          await axios
-            .get(`${apiUrl.feedList}/`, {
-              params: {
-                page: page.value,
-                page_size: 10,
-              },
-            })
-            .then((response: { [key: string]: any }) => {
-              if (response != undefined) {
-                console.log("리스트결과:", response, context);
-                feedList.value.push(...response.data.data);
-                page.value += 1;
-              } else {
-                console.log("없다");
-                noResult.value = true;
-              }
-            });
-        } catch (err) {
-          console.log("err:", err);
-        }
+      const io = new IntersectionObserver(
+        (entries, observer) => {
+          if (entries.some((entry) => entry.intersectionRatio > 0)) {
+            infiniteHandler();
+          }
+        },
+        { rootMargin: "100px" }
+      );
+      const scrollDetector = detector.value as unknown as HTMLElement;
+      const infiniteHandler = () => {
+        console.log("getlist호출", page.value);
+        axios
+          .get(`${apiUrl.feedList}/`, {
+            params: {
+              page: page.value,
+              page_size: 10,
+            },
+          })
+          .then((response: { [key: string]: any }) => {
+            if (response != undefined) {
+              console.log("리스트결과:", response, context);
+              feedList.value.push(...response.data.data);
+              page.value += 1;
+            }
+          })
+          .catch((err: any) => {
+            console.log("err:", err);
+            io.unobserve(scrollDetector);
+          });
       };
+
       onMounted(() => {
         window.addEventListener("scroll", onScroll);
-        loadDataFromServer();
+        io.observe(scrollDetector);
       });
       return {
         scanBtn,
@@ -108,8 +111,8 @@
         alarm,
         userInfo,
         isSignin,
-        noResult,
-        loadDataFromServer,
+        detector,
+        infiniteHandler,
       };
     },
   });
