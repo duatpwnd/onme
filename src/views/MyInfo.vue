@@ -26,7 +26,13 @@
   <BaseBottomModal v-show="menu" @close="menu = false">
     <template #button>
       <label for="upload">사진 선택</label>
-      <input type="file" id="upload" ref="file" @change="handleFileUpload()" />
+      <input
+        type="file"
+        accept=".png,.jpg,.jpeg"
+        id="upload"
+        ref="file"
+        @change="handleFileUpload()"
+      />
       <button class="basic-btn" @click="handleFileUpload('default')">
         기본 이미지
       </button>

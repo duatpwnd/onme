@@ -6,7 +6,7 @@
       <button class="cancel-btn" v-show="isInputFocus">취소</button>
     </header>
     <img
-      src="@/assets/images/register_img.png"
+      :src="route.query.file"
       class="representative-img"
       alt="대표이미지"
       title="대표이미지"
@@ -147,6 +147,7 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
+      const route = globalProperties?.$route;
       const debounce = globalProperties?.$debounce();
       const isInputFocus = ref(false);
       const arr = [
@@ -234,9 +235,7 @@
         post_name: "",
         is_usable: true,
         is_public: true,
-        original_images: ref([
-          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEwSURBVHgBrZW9bYUwEMeP9yIBDR8LoAxA4dSwAQswAhJNRkjLACC6NAwQUVBHCOqkYIAEFjAlFfFZeU3k0+O9+C9ZBzr7J9/5fDZAyPO8R2FeDcNg+As3at/3N2GeOeffBsIE6OMe0B9xAWZny7IuO/uvLDGY4fv+DvrET6BX3mFgmqbQtu3VeYeArutCVVUwjuPVuWQOHceBLMsgCAKYpklacYrSV9c1LMuiBD4AobIsIUkSpU+UGuR5Dod3GIYh9H2vXLCuKzDGpFVJmUPMGSUEUTASSOUHhbmMoug24DzPMAwDuahpGjIKsmyKoqBc0HUdGfbZtu0XleMSdhzHsv6wdEzTlBZPeNs2JVD3XZYhc9AoBH6CJmGj1d5gT6Jtf4mPp982fhdIjHeE4RPwA8S4ekNPvo/3AAAAAElFTkSuQmCC",
-        ]),
+        original_images: [route.query.file],
         tags: computed(() => selectedTag.value.map((el) => el.title)),
         post_copyrights: computed(() =>
           reactiveData.is_usable
@@ -250,32 +249,13 @@
         ),
       });
       const register = () => {
-        console.log({
-          post_name: reactiveData.post_name,
-          is_usable: reactiveData.is_usable,
-          is_public: reactiveData.is_public,
-          original_images: [
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEwSURBVHgBrZW9bYUwEMeP9yIBDR8LoAxA4dSwAQswAhJNRkjLACC6NAwQUVBHCOqkYIAEFjAlFfFZeU3k0+O9+C9ZBzr7J9/5fDZAyPO8R2FeDcNg+As3at/3N2GeOeffBsIE6OMe0B9xAWZny7IuO/uvLDGY4fv+DvrET6BX3mFgmqbQtu3VeYeArutCVVUwjuPVuWQOHceBLMsgCAKYpklacYrSV9c1LMuiBD4AobIsIUkSpU+UGuR5Dod3GIYh9H2vXLCuKzDGpFVJmUPMGSUEUTASSOUHhbmMoug24DzPMAwDuahpGjIKsmyKoqBc0HUdGfbZtu0XleMSdhzHsv6wdEzTlBZPeNs2JVD3XZYhc9AoBH6CJmGj1d5gT6Jtf4mPp982fhdIjHeE4RPwA8S4ekNPvo/3AAAAAElFTkSuQmCC",
-          ],
-          tags: reactiveData.tags,
-          post_copyrights: reactiveData.post_copyrights,
+        console.log("등록:", reactiveData);
+        axios.post(apiUrl.register, reactiveData).then((result: any) => {
+          console.log("작품등록결과:", result);
         });
-        axios
-          .post(apiUrl.register, {
-            post_name: reactiveData.post_name,
-            is_usable: reactiveData.is_usable,
-            is_public: reactiveData.is_public,
-            original_images: [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAEwSURBVHgBrZW9bYUwEMeP9yIBDR8LoAxA4dSwAQswAhJNRkjLACC6NAwQUVBHCOqkYIAEFjAlFfFZeU3k0+O9+C9ZBzr7J9/5fDZAyPO8R2FeDcNg+As3at/3N2GeOeffBsIE6OMe0B9xAWZny7IuO/uvLDGY4fv+DvrET6BX3mFgmqbQtu3VeYeArutCVVUwjuPVuWQOHceBLMsgCAKYpklacYrSV9c1LMuiBD4AobIsIUkSpU+UGuR5Dod3GIYh9H2vXLCuKzDGpFVJmUPMGSUEUTASSOUHhbmMoug24DzPMAwDuahpGjIKsmyKoqBc0HUdGfbZtu0XleMSdhzHsv6wdEzTlBZPeNs2JVD3XZYhc9AoBH6CJmGj1d5gT6Jtf4mPp982fhdIjHeE4RPwA8S4ekNPvo/3AAAAAElFTkSuQmCC",
-            ],
-            tags: reactiveData.tags,
-            post_copyrights: reactiveData.post_copyrights,
-          })
-          .then((result: any) => {
-            console.log("작품등록결과:", result);
-          });
       };
       return {
+        route,
         conditionSet,
         ...toRefs(reactiveData),
         ...tagSearch(),

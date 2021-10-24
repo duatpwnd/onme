@@ -1,9 +1,18 @@
 <template>
+  <div class="mask" v-show="loading"></div>
   <div class="wrap">
     <header>
       <h1>작품피드</h1>
       <div class="btn-wrap">
-        <router-link class="add-btn" to="/register">추가</router-link>
+        <label for="upload" class="add-btn">
+          <input
+            type="file"
+            accept=".png,.jpg,.jpeg"
+            id="upload"
+            ref="file"
+            @change="fileUploadFunc()"
+          />
+        </label>
         <router-link class="search-btn" to="/search">찾기</router-link>
         <router-link
           class="profile-btn"
@@ -41,6 +50,11 @@
       lastScrollPosition: 0,
     });
     const onScroll = () => {
+      console.log(
+        window.scrollY + window.innerHeight,
+
+        document.body.scrollHeight
+      );
       if (scanBtn.lastScrollPosition <= window.scrollY) {
         scanBtn.show = false;
       } else {
@@ -60,12 +74,43 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.$store;
+      const router = globalProperties?.$router;
       const userInfo = computed(() => store.state.userStore.userInfo);
       const { scanBtn, onScroll } = showScanBtn();
       const feedList = ref<{ [key: string]: any }>([]);
       const alarm = ref(false);
       const page = ref(1);
-      const detector = ref(null);
+      const detector = ref(null || HTMLElement);
+      const loading = ref(false);
+      // 파일업로드 함수 :: S //
+      const fileUpload = () => {
+        const file = ref(null);
+        const getBase64 = (file: Blob) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = function (error) {
+              console.log("Error: ", error);
+            };
+          });
+        };
+        const fileUploadFunc = () => {
+          const formData = new FormData();
+          const inputFile = file.value as unknown as HTMLFormElement;
+          const output = getBase64(inputFile.files[0]);
+          output.then((base64) => {
+            router.push({
+              path: "/register",
+              query: { file: base64 },
+            });
+          });
+        };
+        return { file, fileUploadFunc };
+      };
+      // 파일업로드 함수 :: E //
       const isSignin =
         userInfo.value.id == undefined
           ? require("@/assets/images/signout_profile_img1.png")
@@ -76,11 +121,11 @@
             infiniteHandler();
           }
         },
-        { rootMargin: "100px" }
+        { rootMargin: "10px" }
       );
-      const scrollDetector = detector.value as unknown as HTMLElement;
       const infiniteHandler = () => {
         console.log("getlist호출", page.value);
+        loading.value = true;
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
@@ -93,26 +138,29 @@
               console.log("리스트결과:", response, context);
               feedList.value.push(...response.data.data);
               page.value += 1;
+              loading.value = false;
             }
           })
           .catch((err: any) => {
+            loading.value = false;
             console.log("err:", err);
-            io.unobserve(scrollDetector);
+            io.unobserve(detector.value as unknown as HTMLElement);
           });
       };
 
       onMounted(() => {
         window.addEventListener("scroll", onScroll);
-        io.observe(scrollDetector);
+        io.observe(detector.value as unknown as HTMLElement);
       });
       return {
+        loading,
         scanBtn,
         feedList,
         alarm,
         userInfo,
         isSignin,
         detector,
-        infiniteHandler,
+        ...fileUpload(),
       };
     },
   });
@@ -145,10 +193,15 @@
           overflow: hidden;
         }
         .add-btn {
+          display: inline-block;
+          vertical-align: middle;
           width: 20px;
           height: 20px;
           background: url("~@/assets/images/register_btn.png") no-repeat center /
             20px 20px;
+          input[type="file"] {
+            display: none;
+          }
         }
         .search-btn {
           margin: 0 20px;
@@ -206,5 +259,14 @@
     height: 60px;
     background: url("~@/assets/images/scan_btn.png") no-repeat center / 60px
       60px;
+  }
+  .mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 55;
   }
 </style>
