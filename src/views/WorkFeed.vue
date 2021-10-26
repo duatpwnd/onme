@@ -15,9 +15,27 @@
         </label>
         <router-link class="search-btn" to="/search">찾기</router-link>
         <router-link
+          v-if="userInfo.id == undefined"
+          to="/signIn"
           class="profile-btn"
-          :style="{ background: `url(${isSignin})` }"
-          :to="userInfo.id == undefined ? '/signin' : '/myPage'"
+          :style="{
+            'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
+          }"
+        ></router-link>
+        <router-link
+          v-else-if="userInfo.id != undefined && userInfo.image_profile != null"
+          class="profile-btn"
+          :style="[{ 'background-image': `url(${userInfo.image_profile})` }]"
+          to="/myPage"
+          >프로필</router-link
+        >
+        <router-link
+          v-else
+          class="profile-btn"
+          :style="{
+            'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
+          }"
+          to="/myPage"
           >프로필</router-link
         >
       </div>
@@ -25,45 +43,43 @@
     <div class="masnory">
       <div class="mItem" v-for="(list, index) in feedList" :key="index">
         <router-link :to="{ path: '/detail', query: { id: list.id } }">
-          <img :src="list.original_images[0].image" />
+          <img
+            :src="list.original_images[0].image"
+            v-if="list.original_images.length > 0"
+          />
+          <img :src="require('@/assets/images/logo.png')" v-else />
         </router-link>
       </div>
     </div>
     <div class="scroll-detecting" ref="detector"></div>
   </div>
-  <button class="scan-btn" v-show="scanBtn.show"></button>
+  <!-- <button class="scan-btn" v-show="scanBtn.show"></button> -->
 </template>
 <script lang="ts">
   import {
     defineComponent,
     onMounted,
-    reactive,
     ref,
     getCurrentInstance,
     computed,
   } from "vue";
 
   // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: S
-  const showScanBtn = () => {
-    const scanBtn = reactive({
-      show: true,
-      lastScrollPosition: 0,
-    });
-    const onScroll = () => {
-      console.log(
-        window.scrollY + window.innerHeight,
-
-        document.body.scrollHeight
-      );
-      if (scanBtn.lastScrollPosition <= window.scrollY) {
-        scanBtn.show = false;
-      } else {
-        scanBtn.show = true;
-      }
-      scanBtn.lastScrollPosition = window.scrollY;
-    };
-    return { scanBtn, onScroll };
-  };
+  // const showScanBtn = () => {
+  //   const scanBtn = reactive({
+  //     show: true,
+  //     lastScrollPosition: 0,
+  //   });
+  //   const onScroll = () => {
+  //     if (scanBtn.lastScrollPosition <= window.scrollY) {
+  //       scanBtn.show = false;
+  //     } else {
+  //       scanBtn.show = true;
+  //     }
+  //     scanBtn.lastScrollPosition = window.scrollY;
+  //   };
+  //   return { scanBtn, onScroll };
+  // };
   // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: E
 
   export default defineComponent({
@@ -75,8 +91,9 @@
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.$store;
       const router = globalProperties?.$router;
+      const getBase64 = globalProperties?.$getBase64;
       const userInfo = computed(() => store.state.userStore.userInfo);
-      const { scanBtn, onScroll } = showScanBtn();
+      // const { scanBtn, onScroll } = showScanBtn();
       const feedList = ref<{ [key: string]: any }>([]);
       const alarm = ref(false);
       const page = ref(1);
@@ -85,36 +102,20 @@
       // 파일업로드 함수 :: S //
       const fileUpload = () => {
         const file = ref(null);
-        const getBase64 = (file: Blob) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-              resolve(reader.result);
-            };
-            reader.onerror = function (error) {
-              console.log("Error: ", error);
-            };
-          });
-        };
         const fileUploadFunc = () => {
-          const formData = new FormData();
           const inputFile = file.value as unknown as HTMLFormElement;
           const output = getBase64(inputFile.files[0]);
-          output.then((base64) => {
+          output.then((base64: string) => {
+            localStorage.setItem("base64", base64);
             router.push({
               path: "/register",
-              query: { file: base64 },
             });
           });
         };
         return { file, fileUploadFunc };
       };
+      console.log(userInfo.value);
       // 파일업로드 함수 :: E //
-      const isSignin =
-        userInfo.value.id == undefined
-          ? require("@/assets/images/signout_profile_img1.png")
-          : require("@/assets/images/signin_profile_img1.png");
       const io = new IntersectionObserver(
         (entries, observer) => {
           if (entries.some((entry) => entry.intersectionRatio > 0)) {
@@ -149,16 +150,14 @@
       };
 
       onMounted(() => {
-        window.addEventListener("scroll", onScroll);
+        // window.addEventListener("scroll", onScroll);
         io.observe(detector.value as unknown as HTMLElement);
       });
       return {
         loading,
-        scanBtn,
         feedList,
         alarm,
         userInfo,
-        isSignin,
         detector,
         ...fileUpload(),
       };
@@ -213,6 +212,7 @@
         .profile-btn {
           width: 30px;
           height: 30px;
+          border-radius: 50px;
           background-repeat: no-repeat;
           background-position: center;
           background-size: 30px 30px;
