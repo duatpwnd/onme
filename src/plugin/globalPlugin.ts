@@ -14,9 +14,21 @@ export default {
       };
     };
     app.config.globalProperties.$signOut = () => {
-      router.push("/");
+      router.push("/signIn");
       VueCookieNext.removeCookie("userInfo");
       store.commit("userStore/USER_INFO", {});
+    };
+    app.config.globalProperties.$getBase64 = (obj: Blob) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(obj);
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+        reader.onerror = function (error) {
+          console.log("Error: ", error);
+        };
+      });
     };
   },
 };
