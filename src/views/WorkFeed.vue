@@ -1,5 +1,9 @@
 <template>
-  <div class="mask" v-show="loading"></div>
+  <img
+    src="@/assets/images/paging_loading_ico.png"
+    class="mask"
+    v-show="loading"
+  />
   <div class="wrap">
     <header>
       <h1>작품피드</h1>
@@ -264,9 +268,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    z-index: 55;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    height: 75px;
+    z-index: 2;
   }
 </style>
