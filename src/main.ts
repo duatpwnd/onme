@@ -17,6 +17,7 @@ app.use(VueClipboard, {
   autoSetContainer: true,
   appendToBody: true,
 });
+
 Sentry.init({
   environment: process.env.NODE_ENV,
   app,
@@ -35,16 +36,17 @@ Sentry.init({
 app.config.globalProperties.axios = axios;
 app.config.globalProperties.apiUrl = apiUrl;
 app.config.globalProperties.emitter = emitter;
-// app.config.errorHandler = (err, vm, info) => {
-//   console.log("에러:", err, "vm", vm, "info:", info);
-// };
-// app.config.warnHandler = (msg, vm, trace) => {
-//   console.log("경고:", msg, vm, trace);
-// };
+app.config.errorHandler = (err, vm, info) => {
+  console.log("에러:", err, "정보:", info);
+};
+app.config.warnHandler = (msg, vm, trace) => {
+  console.log("경고:", msg, "컴포넌트:", trace);
+};
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.interceptors.request.use(
   (config: any) => {
     if (VueCookieNext.getCookie("userInfo") != null) {
+      console.log("토큰:", VueCookieNext.getCookie("userInfo"));
       config.headers.Authorization =
         "Token " + VueCookieNext.getCookie("userInfo").token;
       config.headers.common["Authorization"] =
@@ -63,9 +65,10 @@ axios.interceptors.response.use(
   },
   (err: any) => {
     console.log("요청후에러:", err.response);
+    if (err.response.status == 403) {
+      console.log("dd");
+      app.config.globalProperties.$signOut();
+    }
     return Promise.reject(err.response);
-    // if (err.response.status == 403) {
-    //   app.config.globalProperties.$signOut();
-    // }
   }
 );
