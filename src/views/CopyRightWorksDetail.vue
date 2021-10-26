@@ -1,20 +1,59 @@
 <template>
   <BaseBottomModal v-show="menu" @close="menu = false">
     <template #button>
-      <router-link to="/register">내용수정</router-link>
-      <button class="delete-btn">삭제</button>
+      <router-link :to="{ path: '/register', query: { id: route.query.id } }"
+        >내용수정</router-link
+      >
+      <button class="delete-btn" @click="deleteModal = true">삭제</button>
     </template>
   </BaseBottomModal>
+  <BaseModal
+    v-show="deleteModal"
+    emphasize="정말 삭제하시겠습니까?"
+    contents="삭제된 작품은 복구되지 않습니다"
+    :method="postDelete"
+    @basemodal-close="
+      () => {
+        deleteModal = false;
+      }
+    "
+  ></BaseModal>
+  <div class="mask1" v-show="mask"></div>
+  <div class="guide-modal" v-show="guideModal">
+    <button
+      class="close-btn"
+      @click="
+        guideModal = false;
+        mask = false;
+      "
+    ></button>
+    <img src="@/assets/images/guide_modal.png" />
+  </div>
   <div class="background">
     <img
-      src="@/assets/images/example.png"
+      :src="detailInfo.original_images[0]"
       class="representative-img"
       alt="대표이미지"
       title="대표이미지"
     />
     <div class="btn-wrap">
-      <button class="menu-btn" @click="menu = true"></button>
-      <button class="close-btn"></button>
+      <button
+        class="menu-btn"
+        v-if="userInfo.id == detailInfo.user"
+        @click="menu = true"
+      ></button>
+      <button class="close-btn" @click="router.go(-1)"></button>
+      <p class="toast-message" v-show="guideMessage != ''">
+        {{ guideMessage }}
+      </p>
+    </div>
+  </div>
+  <div class="tag-list-wrap">
+    <h2 class="title">{{ detailInfo.post_name }}</h2>
+    <div class="tag-list">
+      <span class="tag" v-for="(tag, index) in detailInfo.tags" :key="index"
+        >#{{ tag }}</span
+      >
     </div>
   </div>
   <!-- 유저 정보 :: S -->
@@ -25,12 +64,7 @@
         alt="유저프로필"
         title="유저프로필"
       />
-      <span class="user-name">{{ detailInfo.post_name }}</span>
-    </div>
-    <div class="tag-list">
-      <span class="tag" v-for="(tag, index) in detailInfo.tags" :key="index"
-        >#{{ tag }}</span
-      >
+      <span class="user-name">{{ detailInfo.username }}</span>
     </div>
   </div>
   <!-- 유저 정보 :: E -->
@@ -40,25 +74,39 @@
     <h2 class="h2-title">
       {{ detailInfo.is_usable ? "작품 사용 가이드" : "작품 사용금지" }}
     </h2>
-    <span class="notice-ico" v-if="detailInfo.post_copyrights.is_copyright"
-      >저작권표시</span
-    >
-    <span class="non-profit-ico" v-if="detailInfo.post_copyrights.is_no_profit"
-      >비영리</span
-    >
-    <span class="no-change-ico" v-if="detailInfo.post_copyrights.is_no_change"
-      >변경금지</span
-    >
-    <span
-      class="change-permission-ico"
-      v-if="detailInfo.post_copyrights.is_conditional_change"
-      >변경금지</span
-    >
+    <button
+      class="guide-btn"
+      @click="
+        guideModal = true;
+        mask = true;
+      "
+    ></button>
+    <p class="guide-message" v-show="detailInfo.is_usable == false">
+      이 작품은 작가가 타인의 사용을 금지한 작품입니다.
+    </p>
+    <div v-if="detailInfo.post_copyrights != null">
+      <span class="notice-ico" v-if="detailInfo.post_copyrights.is_copyright"
+        >저작권표시</span
+      >
+      <span
+        class="non-profit-ico"
+        v-if="detailInfo.post_copyrights.is_no_profit"
+        >비영리</span
+      >
+      <span class="no-change-ico" v-if="detailInfo.post_copyrights.is_no_change"
+        >변경금지</span
+      >
+      <span
+        class="change-permission-ico"
+        v-if="detailInfo.post_copyrights.is_conditional_change"
+        >변경금지</span
+      >
+    </div>
   </article>
   <!-- 저작물 사용 조건 :: E -->
 
   <!-- 저작물 가이드 :: S -->
-  <article class="guide">
+  <!-- <article class="guide">
     <h2 class="h2-title">저작물 가이드</h2>
     <dl>
       <dt>저작권 표시</dt>
@@ -73,10 +121,20 @@
       <dt>동일조건병경하락</dt>
       <dd>2차적인 변경을 허락하되, 원작물과 동일한 아이콘을 표기해야한다.</dd>
     </dl>
-  </article>
+  </article> -->
   <!-- 저작물 가이드 :: E -->
   <div class="fixed-btn">
-    <button class="copy-btn" v-clipboard:copy="url">출처복사</button>
+    <button
+      class="copy-btn"
+      v-clipboard:copy="url"
+      v-clipboard:success="
+        () => {
+          toastModal('작품 출처 [URL]가 복사되었어요');
+        }
+      "
+    >
+      출처복사
+    </button>
     <button class="download-btn">다운로드</button>
   </div>
 </template>
@@ -87,12 +145,15 @@
     getCurrentInstance,
     reactive,
     toRefs,
+    computed,
   } from "vue";
   import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
+  import BaseModal from "@/components/common/BaseModal.vue";
   export default defineComponent({
     name: "CopyRightWorksDetail",
     components: {
       BaseBottomModal,
+      BaseModal,
     },
     setup() {
       console.log("setup호출");
@@ -101,23 +162,82 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const route = globalProperties?.$route;
+      const router = globalProperties?.$router;
+      const store = globalProperties?.$store;
+      const userInfo = computed(() => store.state.userStore.userInfo);
       const url = window.document.location.href;
-      console.log(url);
+      const guideModal = ref(false);
       const menu = ref(false);
+      const mask = ref(false);
+      const deleteModal = ref(false);
+      const guideMessage = ref("");
       let res = reactive({ detailInfo: {} });
+      const postDelete = () => {
+        axios
+          .delete(apiUrl.register + `/${route.query.id}`)
+          .then((result: any) => {
+            console.log("작품삭제 결과:", result.data.data);
+            router.push("/");
+          });
+      };
+      const toastModal = (message: string) => {
+        guideMessage.value = message;
+        setTimeout(() => {
+          guideMessage.value = "";
+        }, 1500);
+      };
       const getDetailList = (id: number) => {
         axios.get(apiUrl.feedList + `/${id}`).then((result: any) => {
-          console.log("작품상세조회 결과:", result.data.data);
+          console.log("상세조회 결과:", result.data.data);
           res.detailInfo = result.data.data;
         });
       };
       getDetailList(route.query.id);
       const { detailInfo } = toRefs(res);
-      return { menu, res, detailInfo, url };
+      return {
+        menu,
+        mask,
+        res,
+        detailInfo,
+        url,
+        guideModal,
+        userInfo,
+        route,
+        router,
+        guideMessage,
+        deleteModal,
+        toastModal,
+        postDelete,
+      };
     },
   });
 </script>
 <style scoped lang="scss">
+  .mask1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+  }
+  .guide-modal {
+    position: fixed;
+    bottom: 0;
+    z-index: 2;
+    width: 100%;
+    img {
+      width: 100%;
+    }
+    .close-btn {
+      width: 100%;
+      margin-bottom: 24px;
+      height: 21px;
+      background: url("~@/assets/images/close_btn.png") no-repeat center right
+        24px / 21px 21px;
+    }
+  }
   .mask {
     button,
     a {
@@ -139,7 +259,9 @@
     .btn-wrap {
       position: absolute;
       top: 56px;
-      right: 20px;
+      right: 0px;
+      width: 100%;
+      text-align: right;
       .menu-btn {
         width: 36px;
         height: 36px;
@@ -150,18 +272,48 @@
       .close-btn {
         width: 36px;
         height: 36px;
+        margin-right: 20px;
         background: url("~@/assets/images/close_btn1.png") no-repeat center /
           36px 36px;
+      }
+      .toast-message {
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-size: 14px;
+        width: 100%;
+        padding: 19px 20px;
+        box-sizing: border-box;
+        text-align: left;
+        margin-top: 12px;
+      }
+    }
+  }
+  .tag-list-wrap {
+    padding: 20px;
+    .tag-list {
+      margin-top: 8px;
+      .tag {
+        margin-top: 8px;
+        padding: 10px 8px;
+        margin-right: 8px;
+        color: #525a61;
+        background: #f2f4f5;
+        border: 1px solid #e6e8eb;
+        border-radius: 5px;
+        font-size: 12px;
+        text-align: center;
       }
     }
   }
   .user-info {
     padding: 32px 20px;
     border-bottom: 1px solid #e6e8eb;
+    border-top: 1px solid #e6e8eb;
     .user-intro {
       position: relative;
       .user-name {
         width: 185px;
+        font-weight: 700;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -180,22 +332,13 @@
         }
       }
     }
-    .tag-list {
-      margin-top: 8px;
-      .tag {
-        margin-top: 8px;
-        padding: 10px 8px;
-        margin-right: 8px;
-        color: #525a61;
-        background: #f2f4f5;
-        border: 1px solid #e6e8eb;
-        border-radius: 5px;
-        font-size: 12px;
-        text-align: center;
-      }
-    }
   }
   .service-condition {
+    padding-bottom: 144px;
+    .guide-message {
+      font-size: 14px;
+      color: #79828a;
+    }
     span {
       width: 50%;
       padding-left: 52px;
@@ -240,8 +383,17 @@
   article {
     padding: 32px 20px;
     .h2-title {
+      display: inline-block;
+      vertical-align: middle;
       font-size: 18px;
       margin-bottom: 6px;
+    }
+    .guide-btn {
+      width: 16px;
+      height: 16px;
+      margin-left: 15px;
+      background: url("~@/assets/images/guide_btn.png") no-repeat center / 16px
+        16px;
     }
     dl {
       margin-top: 18px;
