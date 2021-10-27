@@ -40,7 +40,7 @@
   </BaseBottomModal>
   <div class="wrap">
     <header>
-      <router-link to="/setting" class="back-btn">뒤로가기</router-link>
+      <button class="back-btn" @click="router.go(-1)">뒤로가기</button>
       <h1 class="header-title">내정보</h1>
     </header>
     <div class="profile">
@@ -89,10 +89,10 @@
   import {
     defineComponent,
     onMounted,
-    computed,
     ref,
     getCurrentInstance,
     toRefs,
+    computed,
     reactive,
   } from "vue";
   import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
@@ -102,12 +102,14 @@
       BaseBottomModal,
     },
     setup() {
-      console.log("setup호출");
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
+      const router = globalProperties?.$router;
+      const cookie = globalProperties?.$cookie;
       const store = globalProperties?.$store;
+      const userStore = computed(() => store.state.userStore.userInfo);
       const res = reactive({ userInfo: "" });
       const menu = ref(false);
       const file = ref(null);
@@ -128,7 +130,13 @@
           .then((result: { [key: string]: any }) => {
             console.log("닉네임수정결과:", result.data.data.username);
             initialize();
-            getMyInfo();
+            getMyInfo().then((result: { [key: string]: any }) => {
+              cookie.setCookie("userInfo", { ...userStore.value, ...result });
+              store.commit("userStore/USER_INFO", {
+                ...userStore.value,
+                ...result,
+              });
+            });
           })
           .catch((err: any) => {
             console.log("닉네임수정에러:", err);
@@ -141,7 +149,6 @@
         const inputFile = file.value as unknown as HTMLFormElement;
         menu.value = false;
         if (type == "default") {
-          console.log("기본", type);
           formData.append("image_profile", "");
         } else {
           formData.append("image_profile", inputFile.files[0]);
@@ -154,7 +161,13 @@
           })
           .then((result: { [key: string]: any }) => {
             console.log("프로필이미지수정결과:", result);
-            getMyInfo();
+            getMyInfo().then((result: { [key: string]: any }) => {
+              cookie.setCookie("userInfo", { ...userStore.value, ...result });
+              store.commit("userStore/USER_INFO", {
+                ...userStore.value,
+                ...result,
+              });
+            });
           })
           .catch((err: any) => {
             console.log("파일업로드에러:", err);
@@ -162,10 +175,13 @@
       };
       // 마이페이지 조회
       const getMyInfo = () => {
-        axios.get(apiUrl.getMyInfo).then((result: { [key: string]: any }) => {
-          console.log("마이페이지호회결과:", result);
-          res.userInfo = result.data.data;
-        });
+        return axios
+          .get(apiUrl.getMyInfo)
+          .then((result: { [key: string]: any }) => {
+            console.log("마이페이지호회결과:", result);
+            res.userInfo = result.data.data;
+            return result.data.data;
+          });
       };
       const maxlengthCheck = () => {
         if (nickname.value.length > 20) {
@@ -185,6 +201,7 @@
         userInfo,
         nicknameChangeModal,
         errorMessage,
+        router,
         nicknameChange,
         handleFileUpload,
         initialize,

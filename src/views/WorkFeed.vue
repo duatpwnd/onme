@@ -1,9 +1,4 @@
 <template>
-  <img
-    src="@/assets/images/paging_loading_ico.png"
-    class="mask"
-    v-show="loading"
-  />
   <div class="wrap">
     <header>
       <h1>작품피드</h1>
@@ -44,11 +39,12 @@
         >
       </div>
     </header>
-    <div class="masnory">
+    <MasnoryLayout />
+    <!-- <div class="masnory">
       <div class="mItem" v-for="(list, index) in feedList" :key="index">
         <router-link :to="{ path: '/detail', query: { id: list.id } }">
           <img
-            :src="list.original_images[0].image"
+            :src="list.original_images[0]"
             v-if="list.original_images.length > 0"
           />
           <img :src="require('@/assets/images/logo.png')" v-else />
@@ -56,8 +52,9 @@
       </div>
     </div>
     <div class="scroll-detecting" ref="detector"></div>
+  </div> -->
+    <!-- <button class="scan-btn" v-show="scanBtn.show"></button> -->
   </div>
-  <!-- <button class="scan-btn" v-show="scanBtn.show"></button> -->
 </template>
 <script lang="ts">
   import {
@@ -67,7 +64,7 @@
     getCurrentInstance,
     computed,
   } from "vue";
-
+  import MasnoryLayout from "@/components/common/MasnoryLayout.vue";
   // 스캔버튼 스크롤 업/다운시 노출 및 숨겨짐 함수 :: S
   // const showScanBtn = () => {
   //   const scanBtn = reactive({
@@ -88,6 +85,9 @@
 
   export default defineComponent({
     name: "WorkFeed",
+    components: {
+      MasnoryLayout,
+    },
     setup(props, context) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
@@ -98,11 +98,7 @@
       const getBase64 = globalProperties?.$getBase64;
       const userInfo = computed(() => store.state.userStore.userInfo);
       // const { scanBtn, onScroll } = showScanBtn();
-      const feedList = ref<{ [key: string]: any }>([]);
       const alarm = ref(false);
-      const page = ref(1);
-      const detector = ref(null || HTMLElement);
-      const loading = ref(false);
       // 파일업로드 함수 :: S //
       const fileUpload = () => {
         const file = ref(null);
@@ -120,49 +116,13 @@
       };
       console.log(userInfo.value);
       // 파일업로드 함수 :: E //
-      const io = new IntersectionObserver(
-        (entries, observer) => {
-          if (entries.some((entry) => entry.intersectionRatio > 0)) {
-            infiniteHandler();
-          }
-        },
-        { rootMargin: "10px" }
-      );
-      const infiniteHandler = () => {
-        console.log("getlist호출", page.value);
-        loading.value = true;
-        axios
-          .get(`${apiUrl.feedList}/`, {
-            params: {
-              page: page.value,
-              page_size: 10,
-            },
-          })
-          .then((response: { [key: string]: any }) => {
-            if (response != undefined) {
-              console.log("리스트결과:", response, context);
-              feedList.value.push(...response.data.data);
-              page.value += 1;
-              loading.value = false;
-            }
-          })
-          .catch((err: any) => {
-            loading.value = false;
-            console.log("err:", err);
-            io.unobserve(detector.value as unknown as HTMLElement);
-          });
-      };
 
       onMounted(() => {
         // window.addEventListener("scroll", onScroll);
-        io.observe(detector.value as unknown as HTMLElement);
       });
       return {
-        loading,
-        feedList,
         alarm,
         userInfo,
-        detector,
         ...fileUpload(),
       };
     },
@@ -234,24 +194,6 @@
       color: white;
       background: rgba(13, 16, 26, 0.7);
     }
-    .masnory {
-      margin-top: 16px;
-      column-count: 2;
-      column-gap: 16px;
-      .mItem {
-        display: inline-block;
-        margin-bottom: 16px;
-        width: 100%;
-        a {
-          width: 100%;
-          border-radius: 12px;
-          overflow: hidden;
-          img {
-            width: 100%;
-          }
-        }
-      }
-    }
   }
   .scan-btn {
     position: fixed;
@@ -263,15 +205,5 @@
     height: 60px;
     background: url("~@/assets/images/scan_btn.png") no-repeat center / 60px
       60px;
-  }
-  .mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    height: 75px;
-    z-index: 2;
   }
 </style>
