@@ -10,9 +10,16 @@ import mitt from "mitt";
 import { Integrations } from "@sentry/tracing";
 import globalPlugin from "@/plugin/globalPlugin";
 import VueClipboard from "vue3-clipboard";
+import VueLazyLoad from "vue3-lazyload";
 const app = createApp(App);
 const emitter = mitt();
-app.use(store).use(router).use(VueCookieNext).use(globalPlugin).mount("#app");
+app
+  .use(store)
+  .use(globalPlugin)
+  .use(router)
+  .use(VueCookieNext)
+  .use(VueLazyLoad)
+  .mount("#app");
 app.use(VueClipboard, {
   autoSetContainer: true,
   appendToBody: true,
@@ -46,7 +53,6 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.interceptors.request.use(
   (config: any) => {
     if (VueCookieNext.getCookie("userInfo") != null) {
-      console.log("토큰:", VueCookieNext.getCookie("userInfo"));
       config.headers.Authorization =
         "Token " + VueCookieNext.getCookie("userInfo").token;
       config.headers.common["Authorization"] =
@@ -60,7 +66,6 @@ axios.interceptors.request.use(
 );
 axios.interceptors.response.use(
   (response) => {
-    console.log("요청후:", response);
     return response;
   },
   (err: any) => {

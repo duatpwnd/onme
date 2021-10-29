@@ -17,9 +17,12 @@
     <div class="info">
       <div class="user-info">
         <img
-          src="@/assets/images/profile_img.png"
-          alt="유저프로필"
-          title="유저프로필"
+          class="profile-img"
+          :src="
+            userInfo.data.image_profile == null
+              ? require('@/assets/images/signout_profile_img2.png')
+              : userInfo.data.image_profile
+          "
         />
         <span class="user-name">{{ userInfo.data.username }}</span>
         <!-- <span class="sns-link">
@@ -29,12 +32,14 @@
       </div>
       <p class="guide-msg"><strong>0개</strong>의 자산을<br />보호중입니다.</p>
     </div>
+
+    <MasnoryLayout v-if="masnory" :id="userInfo.data.id" />
     <!-- 유저 정보 :: E -->
     <!-- 0개의 자산일 경우 -->
-    <div class="register-area">
+    <!-- <div class="register-area" v-if="feedList.length == 0">
       <p class="msg">보호중인 자산이 없습니다.</p>
       <button class="register-btn">내 자산 등록</button>
-    </div>
+    </div> -->
 
     <!-- <img src="@/assets/images/feed1.png" /> -->
   </div>
@@ -43,14 +48,17 @@
   import {
     defineComponent,
     onMounted,
+    computed,
     ref,
     getCurrentInstance,
     reactive,
   } from "vue";
   import BaseBottomModal from "@/components/common/BaseBottomModal.vue";
+  import MasnoryLayout from "@/components/common/MasnoryLayout.vue";
   export default defineComponent({
     name: "MyPage",
     components: {
+      MasnoryLayout,
       BaseBottomModal,
     },
     setup() {
@@ -58,20 +66,20 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
+      const store = globalProperties?.$store;
+      const userStore = computed(() => store.state.userStore.userInfo);
+      const masnory = ref(false);
       const menu = ref(false);
-      let userInfo = reactive({ data: "" });
+      let userInfo: { [key: string]: any } = reactive({ data: {} });
       const getMyInfo = () => {
         axios.get(apiUrl.getMyInfo).then((result: any) => {
           console.log("나의페이지조회:", result.data.data);
           userInfo.data = result.data.data;
+          masnory.value = true;
         });
       };
       getMyInfo();
-      onMounted(() => {
-        console.log("onmounted호출");
-      });
-
-      return { menu, userInfo };
+      return { menu, userInfo, userStore, masnory };
     },
   });
 </script>
@@ -165,6 +173,11 @@
       margin-top: 24px;
       .user-info {
         position: relative;
+        .profile-img {
+          width: 80px;
+          height: 80px;
+          border-radius: 50px;
+        }
         .user-name {
           width: 185px;
           overflow: hidden;
@@ -190,7 +203,24 @@
         font-size: 24px;
       }
     }
-
+    .masnory {
+      margin-top: 40px;
+      column-count: 2;
+      column-gap: 16px;
+      .mItem {
+        display: inline-block;
+        margin-bottom: 16px;
+        width: 100%;
+        a {
+          width: 100%;
+          border-radius: 12px;
+          overflow: hidden;
+          img {
+            width: 100%;
+          }
+        }
+      }
+    }
     .register-area {
       margin-top: 30px;
       text-align: center;

@@ -44,7 +44,7 @@
       top: 0;
       left: 0;
       background: white;
-      z-index: 1;
+      z-index: 1000;
     }
     header {
       height: 60px;

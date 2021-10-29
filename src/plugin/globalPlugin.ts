@@ -30,5 +30,21 @@ export default {
         };
       });
     };
+    app.config.globalProperties.$toDataURL = (
+      url: string,
+      callback: (param: string) => void
+    ) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          callback(reader.result as string);
+        };
+        reader.readAsDataURL(xhr.response);
+      };
+      xhr.open("GET", url);
+      xhr.responseType = "blob";
+      xhr.send();
+    };
   },
 };

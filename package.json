@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --host 192.168.219.100",
+    "serve": "vue-cli-service serve --host 0.0.0.0",
     "serve_build": "vue-cli-service build --mode development",
     "production": "vue-cli-service serve --mode production",
     "production_build": "vue-cli-service build --mode production",
@@ -17,10 +17,12 @@
     "axios": "^0.22.0",
     "core-js": "^3.6.5",
     "mitt": "^3.0.0",
+    "v-lazy-image": "^2.0.1",
     "vue": "^3.0.0",
     "vue-cookie-next": "^1.3.0",
     "vue-router": "^4.0.0-0",
     "vue3-clipboard": "^1.0.0",
+    "vue3-lazyload": "^0.2.2-beta",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {

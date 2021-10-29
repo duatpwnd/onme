@@ -1,9 +1,4 @@
 <template>
-  <img
-    src="@/assets/images/paging_loading_ico.png"
-    class="loading"
-    v-show="loading"
-  />
   <div class="masnory">
     <div class="mItem" v-for="(list, index) in feedList" :key="index">
       <router-link :to="{ path: '/detail', query: { id: list.id } }">
@@ -15,18 +10,18 @@
       </router-link>
     </div>
   </div>
+  <div class="loading" v-show="loading">
+    <img src="@/assets/images/paging_loading_ico.png" />
+  </div>
   <div class="scroll-detecting" ref="detector"></div>
 </template>
 <script lang="ts">
   import {
     defineComponent,
     onMounted,
-    reactive,
     ref,
     getCurrentInstance,
-    onUpdated,
-    nextTick,
-    onBeforeMount,
+    watch,
   } from "vue";
   export default defineComponent({
     name: "MasnoryLayout",
@@ -34,7 +29,11 @@
       id: {
         type: Number,
       },
+      search: {
+        type: String,
+      },
     },
+    components: {},
     setup(props) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
@@ -52,28 +51,39 @@
         },
         { rootMargin: "10px" }
       );
+      watch(
+        () => [props.id, props.search],
+        (curr, prev) => {
+          console.log("감시자:", curr, prev);
+          page.value = 1;
+          feedList.value = [];
+          io.unobserve(detector.value as unknown as HTMLElement);
+          infiniteHandler();
+        }
+      );
+
       const infiniteHandler = () => {
-        console.log("핸들러감시시작");
         loading.value = true;
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
+              user: props.id,
               page: page.value,
               page_size: 10,
-              user: props.id,
+              search: props.search,
             },
           })
           .then((response: { [key: string]: any }) => {
             if (response != undefined) {
-              console.log("리스트결과:", response);
+              console.log("이미지리스트결과:", response);
               feedList.value.push(...response.data.data);
               page.value += 1;
               loading.value = false;
             }
           })
           .catch((err: any) => {
+            console.log("catch", err);
             loading.value = false;
-            console.log("err:", err);
             io.unobserve(detector.value as unknown as HTMLElement);
           });
       };
@@ -86,14 +96,8 @@
 </script>
 <style scoped lang="scss">
   .loading {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    height: 75px;
-    z-index: 2;
+    text-align: center;
+    padding: 20px 0;
   }
   .masnory {
     margin-top: 16px;

@@ -10,174 +10,215 @@
           class="search-input"
           :value="keyword"
           @focus="searchTab = true"
+          @keyup="
+            debounce(() => {
+              searchType();
+            })
+          "
         />
         <button
           class="delete-btn"
-          @click="keyword = ''"
+          @click="
+            keyword = '';
+            getHistory();
+          "
           v-show="keyword.trim().length > 0"
         >
           지우기
         </button>
       </div>
+      <button @click="closeSearchTab()" v-show="searchTab">취소</button>
     </header>
+
     <div class="recommend-list">
-      <h2 class="h2-title">추천</h2>
-      <div class="feed">
-        <div class="left-feed">
-          <router-link to="/detail"
-            ><img src="@/assets/images/feed1.png"
-          /></router-link>
-          <router-link to="/">
-            <img src="@/assets/images/feed5.png" />
-          </router-link>
-        </div>
-        <div class="right-feed">
-          <router-link to="/">
-            <img src="@/assets/images/feed2.png" />
-          </router-link>
-          <router-link to="/">
-            <img src="@/assets/images/feed3.png" />
-          </router-link>
-          <router-link to="/">
-            <img src="@/assets/images/feed4.png" />
-          </router-link>
-        </div>
-      </div>
+      <h2 class="h2-title">{{ resultedKeyword }}</h2>
       <div v-show="searchTab" class="search-tab">
-        <button
-          v-for="(value, key) in type"
-          :key="key"
-          @click="currentComponent = key"
-          :class="[
-            'tab-btn',
-            { 'active-tab-btn': currentComponent.toLowerCase() == key },
-          ]"
-        >
-          {{ value }}
-        </button>
+        <div class="tab">
+          <button
+            v-for="(value, key) in type"
+            :key="key"
+            @click="currentComponent = key"
+            :class="[
+              'tab-btn',
+              { 'active-tab-btn': currentComponent.toLowerCase() == key },
+            ]"
+          >
+            {{ value }}
+          </button>
+        </div>
+        <h2 class="recently-search" v-show="keyword.trim().length == 0">
+          최근검색
+        </h2>
         <keep-alive>
           <component :is="currentComponent"></component>
         </keep-alive>
       </div>
     </div>
+    <MasnoryLayout :id="userid" :search="tag" />
   </div>
 </template>
 <script lang="ts">
   import {
     defineComponent,
     onMounted,
-    reactive,
     ref,
     getCurrentInstance,
+    computed,
   } from "vue";
   import Total from "@/components/search-category/Total.vue";
   import Writer from "@/components/search-category/Writer.vue";
   import Tag from "@/components/search-category/Tag.vue";
+  import MasnoryLayout from "@/components/common/MasnoryLayout.vue";
+  import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
     name: "Search",
     components: {
       Total,
       Tag,
       Writer,
+      MasnoryLayout,
     },
     setup() {
-      console.log("setup호출");
-      const instance = getCurrentInstance();
-      const axios = instance?.appContext.config.globalProperties.axios;
-      const keyword = ref("");
-      const currentComponent = ref("Total");
+      const globalProperties =
+        getCurrentInstance()?.appContext.config.globalProperties;
+      const axios = globalProperties?.axios;
+      const apiUrl = globalProperties?.apiUrl;
+      const debounce = globalProperties?.$debounce();
+      const search = ref("");
+      const userid = ref<null | number>(null); // 작가검색 리스트의 고유한id값으로 이미지 리스트 뿌리기
+      const tag = ref<null | string>(null); // 태그검색 리스트의 타이틀값으로 이미지 리스트 뿌리기
+      const resultedKeyword = ref("추천");
+      const currentComponent = ref("total");
       const searchTab = ref(false);
+      const emitter = globalProperties?.emitter;
       const type = {
-        total: "전체",
+        total: "작품",
         writer: "작가",
         tag: "태그",
       };
+      // 태그검색
+      const { keyword, getHistory } = searchHistory();
+
+      // 검색탭 닫기
+      const closeSearchTab = () => {
+        searchTab.value = false;
+        getHistory();
+      };
+      // 검색히스토리 얻기
+
       onMounted(() => {
-        console.log("onmounted호출");
+        getHistory();
+        emitter.on(
+          "search-result",
+          (result: { [key: string]: any } | string) => {
+            searchTab.value = false;
+            if (typeof result == "object") {
+              userid.value = result.id;
+              tag.value = null;
+              resultedKeyword.value = result.name + " 검색결과";
+            } else {
+              tag.value = result as string;
+              userid.value = null;
+              resultedKeyword.value = "#" + result + " 검색결과";
+            }
+          }
+        );
       });
-      return { keyword, type, currentComponent, searchTab };
+      return {
+        type,
+        currentComponent,
+        searchTab,
+        search,
+        debounce,
+        userid,
+        tag,
+        resultedKeyword,
+        closeSearchTab,
+        ...searchHistory(),
+      };
     },
   });
 </script>
 <style scoped lang="scss">
+  :global(#app) {
+    height: 100%;
+  }
   .wrap {
     padding: 20px;
-    .search-area {
-      background: #f2f4f5;
-      padding: 12px 20px;
-      border-radius: 8px;
-      width: calc(100% - 46px);
-      box-sizing: border-box;
-      position: absolute;
+    padding-top: 0;
+    header {
+      position: sticky;
       top: 0;
-      right: 0;
-      bottom: 0;
-      margin: auto;
-      height: 48px;
-      .search-input {
-        width: calc(100% - 24px);
-        border: 0;
-        background: #f2f4f5;
-        &::placeholder {
-          color: #9ea7ad;
-        }
+      z-index: 2;
+      background: white;
+      padding-top: 20px;
+      .back-btn {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
       }
-      .delete-btn {
-        width: 24px;
-        height: 20px;
-        text-align: right;
-        text-indent: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        background: url("~@/assets/images/clear.png") no-repeat right / 20px
-          20px;
+      .search-area {
+        background: #f2f4f5;
+        padding: 12px 20px;
+        border-radius: 8px;
+        width: calc(100% - 97px);
+        margin: 0 15px 0 30px;
+        display: inline-block;
+        box-sizing: border-box;
+        .search-input {
+          width: calc(100% - 24px);
+          border: 0;
+          background: #f2f4f5;
+          &::placeholder {
+            color: #9ea7ad;
+          }
+        }
+        .delete-btn {
+          width: 24px;
+          height: 20px;
+          text-align: right;
+          text-indent: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          background: url("~@/assets/images/clear.png") no-repeat right / 20px
+            20px;
+        }
       }
     }
     .recommend-list {
       position: relative;
-      .h2-title {
-        margin-top: 30px;
-      }
-      .feed {
-        &:after {
-          display: block;
-          content: "";
-          clear: both;
-        }
-        div {
-          width: 48.5%;
-          vertical-align: top;
-          a {
-            margin-top: 20px;
-            width: 100%;
-            img {
-              width: 100%;
-            }
-          }
-        }
-        .left-feed {
-          float: left;
-        }
-        .right-feed {
-          float: right;
-        }
-      }
-
+      margin-top: 10px;
       .search-tab {
-        position: absolute;
-        top: 0;
+        position: fixed;
+        left: 0;
+        top: 78px;
         width: 100%;
         z-index: 4;
         background: white;
         height: 100%;
-        .tab-btn {
-          width: 33.333%;
-          color: #9ea7ad;
-          font-weight: 400;
+        .recently-search {
+          padding: 0 20px;
+          margin-top: 30px;
         }
-        .active-tab-btn {
-          font-weight: 700;
-          color: #303538;
+        .history {
+          background: white;
+          height: calc(100% - 131px);
+          overflow-y: auto;
+          padding: 20px 0;
+          box-sizing: border-box;
+        }
+        .tab {
+          padding: 14px 0;
+          border-bottom: 1px solid #9ea7ad;
+          .tab-btn {
+            width: 33.333%;
+            color: #9ea7ad;
+            font-weight: 400;
+          }
+          .active-tab-btn {
+            font-weight: 700;
+            color: #303538;
+          }
         }
       }
     }

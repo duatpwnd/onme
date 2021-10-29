@@ -33,7 +33,11 @@
         ref="file"
         @change="handleFileUpload()"
       />
-      <button class="basic-btn" @click="handleFileUpload('default')">
+      <button
+        v-if="userInfo.image_profile != null"
+        class="basic-btn"
+        @click="handleFileUpload('default')"
+      >
         기본 이미지
       </button>
     </template>

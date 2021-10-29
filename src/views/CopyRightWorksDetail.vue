@@ -135,7 +135,7 @@
     >
       출처복사
     </button>
-    <button class="download-btn">다운로드</button>
+    <button class="download-btn" @click="download()">다운로드</button>
   </div>
 </template>
 <script lang="ts">
@@ -164,6 +164,7 @@
       const route = globalProperties?.$route;
       const router = globalProperties?.$router;
       const store = globalProperties?.$store;
+      const toDataURL = globalProperties?.$toDataURL;
       const userInfo = computed(() => store.state.userStore.userInfo);
       const url = window.document.location.href;
       const guideModal = ref(false);
@@ -171,7 +172,32 @@
       const mask = ref(false);
       const deleteModal = ref(false);
       const guideMessage = ref("");
-      let res = reactive({ detailInfo: {} });
+      let res = reactive({ detailInfo: {} as { [key: string]: any } });
+      const toastModal = (message: string) => {
+        guideMessage.value = message;
+        const set = setTimeout(() => {
+          guideMessage.value = "";
+          clearTimeout(set);
+        }, 1500);
+      };
+      const download = () => {
+        axios
+          .post(apiUrl.feedList + `/${route.query.id}/image_share/`)
+          .then((result: any) => {
+            console.log(result.data.data, result.data.data.post);
+
+            axios
+              .get(apiUrl.getBase64 + `/${result.data.data.post}/base64`)
+              .then((result: any) => {
+                toastModal("작품을 사진 앨범에 다운로드했어요");
+                let link = document.createElement("a");
+                link.href = "data:image/jpeg;base64," + result.data.data;
+                link.target = "_self";
+                link.download = "NOPY";
+                link.click();
+              });
+          });
+      };
       const postDelete = () => {
         axios
           .delete(apiUrl.register + `/${route.query.id}`)
@@ -180,12 +206,7 @@
             router.push("/");
           });
       };
-      const toastModal = (message: string) => {
-        guideMessage.value = message;
-        setTimeout(() => {
-          guideMessage.value = "";
-        }, 1500);
-      };
+
       const getDetailList = (id: number) => {
         axios.get(apiUrl.feedList + `/${id}`).then((result: any) => {
           console.log("상세조회 결과:", result.data.data);
@@ -206,6 +227,7 @@
         router,
         guideMessage,
         deleteModal,
+        download,
         toastModal,
         postDelete,
       };
@@ -258,6 +280,7 @@
     }
     .btn-wrap {
       position: absolute;
+      z-index: 2;
       top: 56px;
       right: 0px;
       width: 100%;
@@ -384,14 +407,14 @@
     padding: 32px 20px;
     .h2-title {
       display: inline-block;
-      vertical-align: middle;
+      vertical-align: 1px;
       font-size: 18px;
       margin-bottom: 6px;
     }
     .guide-btn {
       width: 16px;
       height: 16px;
-      margin-left: 15px;
+      margin-left: 8px;
       background: url("~@/assets/images/guide_btn.png") no-repeat center / 16px
         16px;
     }
