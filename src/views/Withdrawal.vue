@@ -53,7 +53,7 @@
         console.log(reason.value);
         axios
           .delete(apiUrl.withdraw, {
-            withdraw_reason: reason.value,
+            data: { withdraw_reason: reason.value },
           })
           .then((result: any) => {
             console.log("탈퇴결과:", result);
