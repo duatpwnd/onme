@@ -1,19 +1,22 @@
 <template>
   <ul class="history" ref="detector">
     <li
-      v-for="(list, index) in tagList"
+      v-for="(list, index) in userList"
       :key="index"
       class="history-list"
       @click="
-        createHistory('tag', {
-          tag: list.user == undefined ? list.id : list.tag,
+        createHistory('user', {
+          searched_user: list.user == undefined ? list.id : list.searched_user,
         });
-        search(list.title);
+        search({
+          id: list.searched_user,
+          name: list.username,
+        });
       "
     >
-      <img src="@/assets/images/tag.png" alt="" title="" class="tag-img" />
-      <div class="tag-info">
-        <b class="tag-title"><b>#</b>{{ list.title }}</b>
+      <img src="@/assets/images/ex1.png" alt="" title="" class="tag-img" />
+      <div class="user-info">
+        <b class="user-name">{{ list.username }}</b>
         <span class="works">저작물 1개</span>
       </div>
       <button
@@ -28,34 +31,35 @@
   import { defineComponent, getCurrentInstance, onActivated } from "vue";
   import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
-    name: "Tag Tab",
+    name: "User Tab",
     setup() {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const emitter = globalProperties?.emitter;
       const scrollDetect = globalProperties?.$scrollDetect;
       let {
-        isTagLastPage,
-        tagList,
+        isUserLastPage,
+        userList,
         detector,
         page,
         createHistory,
         deleteHistory,
-        tagSearch,
+        userSearch,
       } = searchHistory();
-      const search = (title: string) => {
-        emitter.emit("search-result", title);
+      const search = (obj: { [key: string]: any }) => {
+        emitter.emit("search-result", obj);
       };
       onActivated(() => {
+        console.log("Writer컴포넌트 생성");
         scrollDetect(detector.value, () => {
-          if (isTagLastPage.value == false && tagList.value.length >= 20) {
+          if (isUserLastPage.value == false && userList.value.length >= 20) {
+            console.log("작가바닥감지");
             page.value += 1;
-            tagSearch();
+            userSearch();
           }
         });
       });
-
-      return { search, createHistory, deleteHistory, detector, tagList };
+      return { detector, userList, search, createHistory, deleteHistory };
     },
   });
 </script>
