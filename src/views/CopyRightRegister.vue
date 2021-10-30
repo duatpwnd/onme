@@ -75,6 +75,7 @@
         "
         @keyup="
           debounce(() => {
+            tagList = [];
             search();
           })
         "
@@ -84,7 +85,7 @@
         태그 최대 5개까지 입력가능
       </p>
       <!-- 태그 리스트 :: S -->
-      <ul class="tag-wrap" v-if="tagList.length > 0">
+      <ul class="tag-wrap" ref="detector">
         <li
           v-for="(list, index) in tagList"
           :key="index"
@@ -175,11 +176,11 @@
     getCurrentInstance,
     computed,
     toRefs,
+    onMounted,
   } from "vue";
   import BaseSwitcherButton from "@/components/common/BaseSwitcherButton.vue";
   import BaseCheckBox from "@/components/common/BaseCheckBox.vue";
   import BaseModal from "@/components/common/BaseModal.vue";
-
   export default defineComponent({
     components: { BaseCheckBox, BaseSwitcherButton, BaseModal },
     setup() {
@@ -190,6 +191,10 @@
       const router = globalProperties?.$router;
       const route = globalProperties?.$route;
       const debounce = globalProperties?.$debounce();
+      const scrollDetect = globalProperties?.$scrollDetect;
+      const detector = ref(null);
+      const page = ref(1);
+      const isLastPage = ref(false);
       const isInputFocus = ref(false);
       const loading = ref(false);
       const cancelModal = ref(false);
@@ -214,12 +219,12 @@
       // 태그 검색 :: S
       let keyword = ref("");
       const tagSearch = () => {
+        const tagList = ref<{ [key: string]: any }[]>([]);
         // 선택된 태그 제거
         const deleteTag = (index: number) => {
           reactiveData.tags.splice(index, 1);
         };
         // 검색 초기화 함수
-        const tagList = ref<{ [key: string]: any }[]>([]);
         const searchInitialize = () => {
           keyword.value = "";
           tagList.value = [];
@@ -246,31 +251,36 @@
           }
         };
         const search = () => {
-          console.log("서치함수호출", keyword.value.trim().length);
-          if (keyword.value.trim().length != 0) {
-            axios
-              .get(apiUrl.tagSearch, {
-                params: {
-                  search: keyword.value,
-                },
-              })
-              .then((result: { [key: string]: any }) => {
-                console.log("태그검색결과:", result);
-                tagList.value = result.data.data;
-              });
-          } else {
-            tagList.value = [];
-          }
+          console.log("서치함수호출");
+          isLastPage.value = false;
+          axios
+            .get(apiUrl.tagSearch, {
+              params: {
+                page: page.value,
+                page_size: 20,
+                search: keyword.value,
+              },
+            })
+            .then((result: { [key: string]: any }) => {
+              console.log("태그검색결과:", result.data.data);
+              tagList.value.push(...result.data.data);
+            })
+            .catch((err: any) => {
+              console.log("태그마지막페이지다", err);
+              isLastPage.value = true;
+              page.value = 1;
+            });
         };
         return {
           tagList,
-          isInputFocus,
           search,
           selectTagFunc,
           deleteTag,
           keySpace,
         };
       };
+      const { tagList, search, selectTagFunc, deleteTag, keySpace } =
+        tagSearch();
       // 태그 검색 :: E
       interface Type {
         [index: string]: any;
@@ -313,9 +323,6 @@
             console.log(reactiveData);
           });
       };
-      if (route.query.id != undefined) {
-        getDetailList(route.query.id);
-      }
       // 작품수정링크 타고왔을경우 :: E
       const modify = () => {
         loading.value = true;
@@ -331,29 +338,44 @@
           });
       };
       const register = () => {
-        console.log("등록:", reactiveData);
         loading.value = true;
         mask.value = true;
         axios.post(apiUrl.register, reactiveData).then((result: any) => {
-          console.log("작품등록결과:", result);
           loading.value = false;
           mask.value = false;
           router.push("/");
         });
       };
+      onMounted(() => {
+        if (route.query.id != undefined) {
+          getDetailList(route.query.id);
+        }
+        scrollDetect(detector.value, () => {
+          if (isLastPage.value == false) {
+            page.value += 1;
+            search();
+          }
+        });
+      });
       return {
         mask,
+        detector,
         loading,
         debounce,
         keyword,
         conditionSet,
         route,
         cancelModal,
+        tagList,
+        isInputFocus,
+        search,
+        selectTagFunc,
+        deleteTag,
+        keySpace,
         cancel,
-        ...toRefs(reactiveData),
-        ...tagSearch(),
         modify,
         register,
+        ...toRefs(reactiveData),
       };
     },
   });
@@ -487,7 +509,7 @@
       }
     }
     .active {
-      position: fixed;
+      position: absolute;
       top: 60px;
       left: 0;
       background: white;
