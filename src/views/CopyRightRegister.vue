@@ -102,7 +102,7 @@
       <!-- 태그 리스트 :: E -->
     </div>
     <div class="title-input">
-      <input type="text" v-model="post_name" placeholder="제목 입력" />
+      <input type="text" v-model="post_name" />
     </div>
     <div class="is-open">
       <h2 class="title">공개여부</h2>
@@ -292,7 +292,7 @@
         post_copyrights: { [key: string]: any }[] | null;
       }
       let reactiveData: Type = reactive({
-        post_name: "",
+        post_name: "제목 입력",
         is_usable: true,
         is_public: true,
         original_images: [localStorage.getItem("base64") as string],
@@ -396,6 +396,11 @@
     line-height: 60px;
     height: 60px;
     text-align: center;
+    position: fixed;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    background: white;
   }
   .loading-background,
   .loading-ico {
