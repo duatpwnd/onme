@@ -59,37 +59,42 @@
         </p>
         <p
           class="guide-msg"
-          v-if="userPw2.length > 0 && errorType.error3 == false"
+          v-if="
+            userPw2.length > 0 &&
+            errorType.error1 == false &&
+            errorType.error2 == false &&
+            errorType.error3 == false
+          "
         >
           비밀번호가 일치하지 않습니다.
         </p>
         <p class="guide-msg">{{ errorMessage }}</p>
+        <button
+          type="button"
+          :class="[
+            {
+              active:
+                email.error &&
+                errorType.error1 == false &&
+                errorType.error2 == false &&
+                errorType.error3,
+            },
+            'signup-btn',
+          ]"
+          @click="
+            email.error &&
+            errorType.error1 == false &&
+            errorType.error2 == false &&
+            errorType.error3
+              ? signUpSubmit(userEmail, userPw1)
+              : ''
+          "
+        >
+          회원가입 완료
+        </button>
       </fieldset>
     </form>
   </div>
-  <button
-    type="button"
-    :class="[
-      {
-        active:
-          email.error &&
-          errorType.error1 == false &&
-          errorType.error2 == false &&
-          errorType.error3,
-      },
-      'signup-btn',
-    ]"
-    @click="
-      email.error &&
-      errorType.error1 == false &&
-      errorType.error2 == false &&
-      errorType.error3
-        ? signUpSubmit(userEmail, userPw1)
-        : ''
-    "
-  >
-    회원가입 완료
-  </button>
 </template>
 <script lang="ts">
   import {
@@ -175,9 +180,6 @@
   });
 </script>
 <style scoped lang="scss">
-  :global(#app) {
-    height: 100%;
-  }
   .wrap {
     padding: 0 20px;
     .signup-form {
@@ -210,20 +212,19 @@
         margin-top: 8px;
         margin-left: 20px;
       }
+      .signup-btn {
+        color: white;
+        background: #b8bfc4;
+        text-align: center;
+        width: 100%;
+        padding: 16px 0;
+        font-size: 18px;
+        margin-top: 12px;
+        border-radius: 4px;
+      }
+      .active {
+        background: black;
+      }
     }
-  }
-  .signup-btn {
-    color: white;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    background: #b8bfc4;
-    text-align: center;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 18px;
-  }
-  .active {
-    background: black;
   }
 </style>

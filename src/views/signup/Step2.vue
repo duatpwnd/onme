@@ -58,7 +58,7 @@
         console.log("이름:", name);
 
         axios
-          .post(apiUrl.checkNickname, { username: name.value })
+          .post(apiUrl.checkNickname, { username: name.value.trim() })
           .then((result: any) => {
             console.log("유저닉네임결과:", result);
             isActive.value = true;

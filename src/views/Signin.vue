@@ -11,16 +11,17 @@
         <legend>로그인</legend>
         <input
           type="text"
-          v-model="userInput.userEmail"
-          @keyup="
-            userInput.userEmailValidation
-              ? (userInput.guideMsg1 = false)
-              : (userInput.guideMsg1 = true)
-          "
+          v-on:input="userInput.userEmail = $event.target.value"
           class="user-email"
           placeholder="이메일 입력"
         />
-        <p class="guide-msg" v-show="userInput.guideMsg1">
+        <p
+          class="guide-msg"
+          v-show="
+            userInput.userEmail.length > 0 &&
+            userInput.userEmailValidation == false
+          "
+        >
           이메일을 다시 확인해 주세요.
         </p>
         <input
@@ -35,14 +36,14 @@
         <button type="button" class="signin-btn" @click="signInSubmit()">
           로그인
         </button>
+        <router-link to="/signUp/step1" class="signup-email"
+          >이메일로 가입하기</router-link
+        >
       </fieldset>
     </form>
     <!-- <h2 class="signin-title">SNS 간편 로그인</h2>
     <button class="apple-signin-btn">애플로그인</button> -->
   </div>
-  <router-link to="/signUp/step1" class="signup-email"
-    >이메일로 가입하기</router-link
-  >
 </template>
 <script lang="ts">
   import {
@@ -78,7 +79,9 @@
       const userInput: ModelType = reactive({
         userEmail: "",
         userPw: "",
-        userEmailValidation: computed(() => regExp.test(userInput.userEmail)),
+        userEmailValidation: computed(() =>
+          regExp.test(userInput.userEmail.trim())
+        ),
         guideMsg1: false, // 이메일 유효성검사 통과 못했을때
         guideMsg2: "", // 이메일 유효성검사는 통과했지만 아이디 또는 비밀번호가 틀렸을때
       });
@@ -111,12 +114,8 @@
   });
 </script>
 <style scoped lang="scss">
-  :global(#app) {
-    height: 100%;
-  }
   .wrap {
     padding: 20px;
-    height: 100%;
     box-sizing: border-box;
     .logo {
       text-align: center;
@@ -142,7 +141,8 @@
         margin-top: 8px;
         margin-left: 20px;
       }
-      .signin-btn {
+      .signin-btn,
+      .signup-email {
         background: black;
         color: white;
         text-align: center;
@@ -150,6 +150,7 @@
         padding: 18px 0;
         margin-top: 20px;
         border-radius: 4px;
+        font-weight: 700;
       }
     }
     .signin-title {
@@ -168,13 +169,5 @@
       background: url("~@/assets/images/sns_signin_apple.png") no-repeat center /
         52px 52px;
     }
-  }
-  .signup-email {
-    text-align: center;
-    width: 100%;
-    border: 1px solid #dbdfe1;
-    border-right: 0;
-    border-left: 0;
-    padding: 28px 0;
   }
 </style>
