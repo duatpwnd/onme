@@ -184,10 +184,11 @@
         axios
           .post(apiUrl.feedList + `/${route.query.id}/image_share/`)
           .then((result: any) => {
-            console.log(result.data.data, result.data.data.post);
-
             axios
-              .get(apiUrl.getBase64 + `/${result.data.data.post}/base64`)
+              .get(
+                apiUrl.getBase64 +
+                  `/${result.data.data.original_images_id}/base64`
+              )
               .then((result: any) => {
                 toastModal("작품을 사진 앨범에 다운로드했어요");
                 let link = document.createElement("a");
