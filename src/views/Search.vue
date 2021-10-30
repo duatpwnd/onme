@@ -50,7 +50,7 @@
           최근검색
         </h2>
         <keep-alive>
-          <component :is="currentComponent"></component>
+          <component :is="currentComponent" :style="styleObject"></component>
         </keep-alive>
       </div>
     </div>
@@ -65,17 +65,17 @@
     getCurrentInstance,
     computed,
   } from "vue";
-  import Total from "@/components/search-category/Total.vue";
-  import Writer from "@/components/search-category/Writer.vue";
+  import Post from "@/components/search-category/Post.vue";
+  import User from "@/components/search-category/User.vue";
   import Tag from "@/components/search-category/Tag.vue";
   import MasnoryLayout from "@/components/common/MasnoryLayout.vue";
   import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
     name: "Search",
     components: {
-      Total,
+      Post,
       Tag,
-      Writer,
+      User,
       MasnoryLayout,
     },
     setup() {
@@ -88,12 +88,21 @@
       const userid = ref<null | number>(null); // 작가검색 리스트의 고유한id값으로 이미지 리스트 뿌리기
       const tag = ref<null | string>(null); // 태그검색 리스트의 타이틀값으로 이미지 리스트 뿌리기
       const resultedKeyword = ref("추천");
-      const currentComponent = ref("total");
+      const currentComponent = ref("post");
       const searchTab = ref(false);
       const emitter = globalProperties?.emitter;
+      const styleObject = computed(() =>
+        keyword.value.trim().length == 0
+          ? {
+              height: "calc(100% - 195px)",
+            }
+          : {
+              height: "calc(100% - 131px)",
+            }
+      );
       const type = {
-        total: "작품",
-        writer: "작가",
+        post: "작품",
+        user: "작가",
         tag: "태그",
       };
       // 태그검색
@@ -133,6 +142,7 @@
         userid,
         tag,
         resultedKeyword,
+        styleObject,
         closeSearchTab,
         ...searchHistory(),
       };
@@ -196,13 +206,14 @@
         z-index: 4;
         background: white;
         height: 100%;
+        display: flex;
+        flex-direction: column;
         .recently-search {
           padding: 0 20px;
           margin-top: 30px;
         }
         .history {
           background: white;
-          height: calc(100% - 131px);
           overflow-y: auto;
           padding: 20px 0;
           box-sizing: border-box;

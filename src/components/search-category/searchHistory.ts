@@ -1,41 +1,25 @@
-import { getCurrentInstance, ref } from "vue";
+import { getCurrentInstance, ref, reactive } from "vue";
 const keyword = ref("");
-const tagPage = ref(1);
-const userPage = ref(1);
 const allList = ref<{ [key: string]: any }[]>([]);
 const tagList = ref<{ [key: string]: any }[]>([]);
 const userList = ref<{ [key: string]: any }[]>([]);
-const detector = ref(null);
-const scrollDetectFlag = ref(false);
+const isTagLastPage = ref(false);
+const isUserLastPage = ref(false);
 export default function searchHistory() {
+  const detector = ref(null);
+  const page = ref(1);
   const globalProperties =
     getCurrentInstance()?.appContext.config.globalProperties;
   const axios = globalProperties?.axios;
   const apiUrl = globalProperties?.apiUrl;
-  const emitter = globalProperties?.emitter;
   // 스크롤 감지
-  const scrollDetect = () => {
-    const selector = detector.value as unknown as HTMLElement;
-    if (selector.clientHeight + selector.scrollTop >= selector.scrollHeight) {
-      console.log("바닥감지");
-      tagPage.value += 1;
-      tagSearch().catch((err: any) => {
-        console.log("태그추가검색에러:", err);
-        tagPage.value = 1;
-        selector.removeEventListener("scroll", scrollDetect);
-      });
-    }
-  };
-  // const selector = detector.value as unknown as HTMLElement;
-  // selector.addEventListener("scroll", scrollDetect);
-
   // 태그 검색 찾기
   const tagSearch = () => {
-    console.log("태그검색호출", tagPage.value, keyword.value);
+    isTagLastPage.value = false;
     return axios
       .get(apiUrl.tagSearch, {
         params: {
-          page: tagPage.value,
+          page: page.value,
           page_size: 20,
           search: keyword.value,
         },
@@ -44,15 +28,20 @@ export default function searchHistory() {
         console.log("태그검색결과:", result.data.data);
         tagList.value.push(...result.data.data);
         return result.data.data;
+      })
+      .catch((err: any) => {
+        console.log("태그마지막페이지다");
+        isTagLastPage.value = true;
+        page.value = 1;
       });
   };
   // 유저 검색 찾기
   const userSearch = () => {
-    console.log("작가검색호출");
+    isUserLastPage.value = false;
     return axios
       .get(apiUrl.userSearch, {
         params: {
-          page: userPage.value,
+          page: page.value,
           page_size: 20,
           search: keyword.value,
         },
@@ -61,39 +50,44 @@ export default function searchHistory() {
         console.log("작가검색결과:", result.data.data);
         userList.value.push(...result.data.data);
         return result.data.data;
+      })
+      .catch((err: any) => {
+        console.log("작가마지막페이지다");
+        isUserLastPage.value = true;
+        page.value = 1;
       });
   };
   const searchType = () => {
-    console.log("검색타입시작", keyword.value, keyword);
+    console.log("searchType실행");
     if (keyword.value.trim().length > 0) {
       allList.value = [];
       userList.value = [];
       tagList.value = [];
-      axios.all([tagSearch(), userSearch()]).then(
-        axios.spread((...response: any) => {
-          console.log("검색결과:", response);
-          tagList.value.push(...response[0]);
-          userList.value.push(...response[1]);
-        })
-      );
+      axios.all([tagSearch(), userSearch()]);
     } else if (keyword.value.trim().length == 0) {
       getHistory();
     }
   };
   const getHistory = () => {
-    allList.value = [];
     userList.value = [];
     tagList.value = [];
-    axios.get(apiUrl.searchHistory).then((result: any) => {
-      console.log("검색히스토리결과:", result);
-      result.data.data.forEach((el: { [key: string]: any }) => {
-        if (el.tag == null) {
-          userList.value.push(el);
-        } else {
-          tagList.value.push(el);
-        }
+    axios
+      .get(apiUrl.searchHistory, {
+        params: {
+          page: 1,
+          page_size: 15,
+        },
+      })
+      .then((result: any) => {
+        console.log("검색히스토리결과:", result);
+        result.data.data.forEach((el: { [key: string]: any }) => {
+          if (el.tag == null) {
+            userList.value.push(el);
+          } else {
+            tagList.value.push(el);
+          }
+        });
       });
-    });
   };
   const createHistory = (type: string, data: { [key: string]: any }) => {
     axios
@@ -117,10 +111,11 @@ export default function searchHistory() {
   };
 
   return {
+    isTagLastPage,
+    isUserLastPage,
     detector,
     keyword,
-    tagPage,
-    userPage,
+    page,
     allList,
     userList,
     tagList,
@@ -130,6 +125,5 @@ export default function searchHistory() {
     deleteHistory,
     tagSearch,
     userSearch,
-    scrollDetect,
   };
 }

@@ -11,6 +11,6 @@ const apiUrl = {
   tagSearch: "/api/v1/tags", // 태그검색
   userSearch: "/api/v1/users", // 작가검색
   searchHistory: "/api/v1/searches", // 검색히스토리조회
-  getBase64: "/api/v1/original_images", // 검색히스토리조회
+  getBase64: "/api/v1/original_images",
 };
 export default apiUrl;
