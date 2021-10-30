@@ -37,8 +37,8 @@
         </button>
       </fieldset>
     </form>
-    <h2 class="signin-title">SNS 간편 로그인</h2>
-    <button class="apple-signin-btn">애플로그인</button>
+    <!-- <h2 class="signin-title">SNS 간편 로그인</h2>
+    <button class="apple-signin-btn">애플로그인</button> -->
   </div>
   <router-link to="/signUp/step1" class="signup-email"
     >이메일로 가입하기</router-link

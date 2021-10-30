@@ -25,18 +25,27 @@
   </div>
   <BaseBottomModal v-show="menu" @close="menu = false">
     <template #button>
-      <label for="upload">사진 선택</label>
+      <label for="camera">사진 촬영</label>
       <input
         type="file"
+        ref="camera"
+        id="camera"
+        accept="image/*"
+        capture="camera"
+        @change="handleFileUpload(1)"
+      />
+      <label for="upload" class="picture-choice">사진 선택</label>
+      <input
+        type="file"
+        ref="file"
         accept=".png,.jpg,.jpeg"
         id="upload"
-        ref="file"
-        @change="handleFileUpload()"
+        @change="handleFileUpload(2)"
       />
       <button
         v-if="userInfo.image_profile != null"
         class="basic-btn"
-        @click="handleFileUpload('default')"
+        @click="handleFileUpload(2, 'default')"
       >
         기본 이미지
       </button>
@@ -117,6 +126,7 @@
       const res = reactive({ userInfo: "" });
       const menu = ref(false);
       const file = ref(null);
+      const camera = ref(null);
       const errorMessage = ref(null);
       const imageUrl = ref(null);
       const nickname = ref("");
@@ -148,9 +158,14 @@
           });
       };
       // 이미지 업로드
-      const handleFileUpload = async (type: string) => {
+      const handleFileUpload = async (ref: number, type: string) => {
+        console.log(ref);
         const formData = new FormData();
-        const inputFile = file.value as unknown as HTMLFormElement;
+        const inputFile =
+          ref == 1
+            ? (camera.value as unknown as HTMLFormElement)
+            : (file.value as unknown as HTMLFormElement);
+        console.log(inputFile.files[0]);
         menu.value = false;
         if (type == "default") {
           formData.append("image_profile", "");
@@ -197,15 +212,16 @@
         getMyInfo();
       });
       return {
-        maxlengthCheck,
         menu,
         file,
+        camera,
         imageUrl,
         nickname,
         userInfo,
         nicknameChangeModal,
         errorMessage,
         router,
+        maxlengthCheck,
         nicknameChange,
         handleFileUpload,
         initialize,
@@ -226,8 +242,8 @@
       font-size: 24px;
       display: block;
     }
-    .basic-btn {
-      margin-top: 40px;
+    .picture-choice {
+      margin: 40px 0;
     }
   }
   .mask {
