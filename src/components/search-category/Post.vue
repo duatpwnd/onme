@@ -1,53 +1,26 @@
 <template>
-  <ul class="history">
-    <li
-      v-for="(list, index) in allList"
-      :key="index"
-      class="history-list"
-      @click="search(list.title)"
-    >
-      <img
-        src="@/assets/images/ex1.png"
-        v-if="list.username != null"
-        class="tag-img"
-      />
-      <img src="@/assets/images/tag.png" v-else class="tag-img" />
-      <div class="user-info" v-if="list.username != null">
-        <b class="tag-title">{{ list.username }}</b>
-        <span class="works">저작물 1개</span>
-      </div>
-      <div class="tag-info" v-else>
-        <b class="tag-title"><b>#</b>{{ list.title }}</b>
-        <span class="works">저작물 1개</span>
-      </div>
-      <button
-        class="close-btn"
-        v-if="list.user != undefined"
-        @click.stop="deleteHistory(list.id)"
-      ></button>
-    </li>
-  </ul>
+  <div class="works" v-if="keyword.trim().length > 0">
+    <MasnoryLayout :search="keyword" />
+  </div>
 </template>
 <script lang="ts">
-  import { defineComponent, getCurrentInstance, ref } from "vue";
+  import { defineComponent, getCurrentInstance } from "vue";
+  import MasnoryLayout from "@/components/common/MasnoryLayout.vue";
+  import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
     name: "Total Tab",
-    props: {
-      allList: {
-        type: Object,
-      },
+    components: {
+      MasnoryLayout,
     },
     setup() {
-      const globalProperties =
-        getCurrentInstance()?.appContext.config.globalProperties;
-      const emitter = globalProperties?.emitter;
-      const search = (keyword: string) => {
-        emitter.emit("search-result", keyword);
-      };
-      return { search };
+      const { keyword } = searchHistory();
+      return { keyword };
     },
   });
 </script>
 <style scoped lang="scss">
-  @import "@/components/search-category/search.scss";
+  .works {
+    overflow-y: auto;
+    padding: 20px;
+  }
 </style>

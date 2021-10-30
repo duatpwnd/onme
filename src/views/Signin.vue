@@ -87,7 +87,7 @@
       });
       const signInSubmit = () => {
         const body = {
-          email: userInput.userEmail,
+          email: userInput.userEmail.trim(),
           password: userInput.userPw,
         };
         axios
