@@ -152,6 +152,11 @@
         border-radius: 4px;
         font-weight: 700;
       }
+      .signup-email {
+        border: 1px solid #ccc;
+        background: white;
+        color: black;
+      }
     }
     .signin-title {
       margin-top: 64px;

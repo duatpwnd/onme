@@ -20,17 +20,17 @@
       작가님의 알려진 이름, 필명을 사용하여 사람들이 작가님의 계정을 찾을 수
       있도록 도와주세요.<br />작가님의 이름은 나중에 언제든지 변경할 수 있어요.
     </p>
+    <router-link
+      class="next active"
+      v-if="isActive"
+      :to="{
+        path: '/signup/step3',
+        query: { name: name, agree: query.agree },
+      }"
+      >다음</router-link
+    >
+    <router-link v-else to="'/signup/step2'" class="next">다음</router-link>
   </div>
-  <router-link
-    class="next active"
-    v-if="isActive"
-    :to="{
-      path: '/signup/step3',
-      query: { name: name, agree: query.agree },
-    }"
-    >다음</router-link
-  >
-  <router-link v-else to="'/signup/step2'" class="next">다음</router-link>
 </template>
 <script lang="ts">
   import {
@@ -81,7 +81,7 @@
     height: 100%;
   }
   .wrap {
-    padding: 0 20px 264px;
+    padding: 0 20px;
     .alert-msg {
       color: #ef284c;
       font-size: 12px;
@@ -104,16 +104,18 @@
       font-size: 18px;
       border: 0;
     }
-  }
-  .next {
-    color: white;
-    background: #b8bfc4;
-    text-align: center;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 18px;
-  }
-  .active {
-    background: black;
+    .next {
+      color: white;
+      background: #b8bfc4;
+      text-align: center;
+      width: 100%;
+      padding: 16px 0;
+      font-size: 18px;
+      border-radius: 4px;
+      margin-top: 40px;
+    }
+    .active {
+      background: black;
+    }
   }
 </style>
