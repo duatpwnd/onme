@@ -10,10 +10,10 @@
       </router-link>
     </div>
   </div>
+  <div class="scroll-detecting" ref="detector"></div>
   <div class="loading" v-show="loading">
     <img src="@/assets/images/paging_loading_ico.png" />
   </div>
-  <div class="scroll-detecting" ref="detector"></div>
 </template>
 <script lang="ts">
   import {
@@ -52,7 +52,7 @@
             }
           }
         },
-        { rootMargin: "114px" }
+        { rootMargin: "50px" }
       );
       watch(
         () => [props.id, props.search],

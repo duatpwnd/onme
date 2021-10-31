@@ -12,7 +12,7 @@
             @change="fileUploadFunc()"
           />
         </label>
-        <router-link class="search-btn" to="/search">찾기</router-link>
+        <router-link class="search-btn" to="/search"></router-link>
         <router-link
           v-if="userInfo.id == undefined"
           to="/signIn"
@@ -148,7 +148,7 @@
         right: 0;
         bottom: 0;
         margin: auto;
-        height: 30px;
+        height: 44px;
         a {
           vertical-align: middle;
           text-indent: 100%;
@@ -167,7 +167,8 @@
           }
         }
         .search-btn {
-          margin: 0 20px;
+          margin: 0 10px;
+          padding: 10px;
           width: 24px;
           height: 24px;
           background: url("~@/assets/images/search.png") no-repeat center / 24px

@@ -98,6 +98,9 @@
             <span class="works">저작물 {{ list.works }}</span>
           </div>
         </li>
+        <div class="loading1" v-show="loading1">
+          <img src="@/assets/images/paging_loading_ico1.png" />
+        </div>
       </ul>
       <!-- 태그 리스트 :: E -->
     </div>
@@ -197,6 +200,7 @@
       const isLastPage = ref(false);
       const isInputFocus = ref(false);
       const loading = ref(false);
+      const loading1 = ref(false);
       const cancelModal = ref(false);
       const mask = ref(false);
       const arr = [
@@ -253,6 +257,7 @@
         const search = () => {
           console.log("서치함수호출");
           isLastPage.value = false;
+          loading1.value = true;
           axios
             .get(apiUrl.tagSearch, {
               params: {
@@ -264,10 +269,12 @@
             .then((result: { [key: string]: any }) => {
               console.log("태그검색결과:", result.data.data);
               tagList.value.push(...result.data.data);
+              loading1.value = false;
             })
             .catch((err: any) => {
               console.log("태그마지막페이지다", err);
               isLastPage.value = true;
+              loading1.value = false;
               page.value = 1;
             });
         };
@@ -361,6 +368,7 @@
         mask,
         detector,
         loading,
+        loading1,
         debounce,
         keyword,
         conditionSet,
@@ -510,6 +518,12 @@
           .tag-img {
             margin-right: 16px;
           }
+        }
+        .loading1 {
+          position: absolute;
+          bottom: 32px;
+          text-align: center;
+          width: 100%;
         }
       }
     }

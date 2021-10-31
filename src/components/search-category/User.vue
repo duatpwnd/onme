@@ -25,6 +25,9 @@
         @click.stop="deleteHistory(list.id)"
       ></button>
     </li>
+    <div class="loading1" v-show="loading">
+      <img src="@/assets/images/paging_loading_ico1.png" />
+    </div>
   </ul>
 </template>
 <script lang="ts">
@@ -42,6 +45,7 @@
         userList,
         detector,
         page,
+        loading,
         createHistory,
         deleteHistory,
         userSearch,
@@ -59,7 +63,14 @@
           }
         });
       });
-      return { detector, userList, search, createHistory, deleteHistory };
+      return {
+        detector,
+        userList,
+        loading,
+        search,
+        createHistory,
+        deleteHistory,
+      };
     },
   });
 </script>

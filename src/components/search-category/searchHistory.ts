@@ -7,6 +7,7 @@ const isTagLastPage = ref(false);
 const isUserLastPage = ref(false);
 export default function searchHistory() {
   const detector = ref(null);
+  const loading = ref(false);
   const page = ref(1);
   const globalProperties =
     getCurrentInstance()?.appContext.config.globalProperties;
@@ -16,6 +17,7 @@ export default function searchHistory() {
   // 태그 검색 찾기
   const tagSearch = () => {
     isTagLastPage.value = false;
+    loading.value = true;
     return axios
       .get(apiUrl.tagSearch, {
         params: {
@@ -27,11 +29,13 @@ export default function searchHistory() {
       .then((result: { [key: string]: any }) => {
         console.log("태그검색결과:", result.data.data);
         tagList.value.push(...result.data.data);
+        loading.value = false;
         return result.data.data;
       })
       .catch((err: any) => {
         console.log("태그마지막페이지다");
         isTagLastPage.value = true;
+        loading.value = false;
         page.value = 1;
       });
   };
@@ -111,6 +115,7 @@ export default function searchHistory() {
   };
 
   return {
+    loading,
     isTagLastPage,
     isUserLastPage,
     detector,

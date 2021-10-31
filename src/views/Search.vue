@@ -54,7 +54,9 @@
         </keep-alive>
       </div>
     </div>
-    <MasnoryLayout :id="userid" :search="tag" />
+    <div v-show="searchTab == false">
+      <MasnoryLayout :id="userid" :search="tag" />
+    </div>
   </div>
 </template>
 <script lang="ts">

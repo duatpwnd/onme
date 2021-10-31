@@ -55,7 +55,10 @@ export default {
       callback: () => void
     ) => {
       element.addEventListener("scroll", () => {
-        if (element.clientHeight + element.scrollTop >= element.scrollHeight) {
+        if (
+          element.clientHeight + Math.ceil(element.scrollTop) >=
+          element.scrollHeight
+        ) {
           callback();
         }
       });
