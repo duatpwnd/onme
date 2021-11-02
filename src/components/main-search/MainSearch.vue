@@ -63,7 +63,7 @@
       font-size: 52px;
       color: white;
       line-height: 68px;
-      margin-top: 210px;
+      margin-top: 16vh;
     }
     .message {
       color: #79828a;
@@ -73,7 +73,7 @@
     }
     .search-area {
       width: 530px;
-      margin-top: 40px;
+      margin-top: 3.1vh;
       .text-input {
         color: #5a5d67;
         font-size: 20px;
@@ -95,7 +95,7 @@
       }
     }
     .btn-wrap {
-      margin-top: 100px;
+      margin-top: 8vh;
       .btn {
         &:hover {
           background-color: #5a5d67;
