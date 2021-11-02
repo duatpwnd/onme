@@ -28,11 +28,11 @@
         <option value="ETC">기타</option>
       </select>
     </div>
-    <button class="withdrawal-btn" v-if="reason == null">회원탈퇴</button>
-    <button class="withdrawal-btn active" v-else @click="iswithdraw = true">
-      회원탈퇴
-    </button>
   </div>
+  <button class="withdrawal-btn" v-if="reason == null">회원탈퇴</button>
+  <button class="withdrawal-btn active" v-else @click="iswithdraw = true">
+    회원탈퇴
+  </button>
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref, getCurrentInstance } from "vue";
@@ -98,19 +98,19 @@
           no-repeat right 20px center / 12px 6px;
       }
     }
-    .withdrawal-btn {
-      background: #dbdfe1;
-      color: white;
-      text-align: center;
-      font-size: 18px;
-      padding: 18px 0;
-      position: fixed;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-    }
-    .active {
-      background: black;
-    }
+  }
+  .withdrawal-btn {
+    background: #dbdfe1;
+    color: white;
+    text-align: center;
+    font-size: 18px;
+    padding: 18px 0;
+    position: fixed;
+    bottom: 0;
+    max-width: 435px;
+    width: 100%;
+  }
+  .active {
+    background: black;
   }
 </style>

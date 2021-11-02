@@ -41,24 +41,26 @@
   });
 </script>
 <style scoped lang="scss">
-  .wrap {
-    header {
-      text-align: center;
-      .back-btn {
-        left: 20px;
+  #app {
+    .wrap {
+      header {
+        text-align: center;
+        .back-btn {
+          left: 20px;
+        }
       }
-    }
-    .row {
-      border-bottom: 1px solid #f2f4f5;
-      padding: 24px 20px;
-      width: 100%;
-      box-sizing: border-box;
-      background: url("~@/assets/images/arrow_ico.png") no-repeat right 20px
-        center / 7px 13px;
-    }
-    button {
-      font-weight: 400;
-      text-align: left;
+      .row {
+        border-bottom: 1px solid #f2f4f5;
+        padding: 24px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        background: url("~@/assets/images/arrow_ico.png") no-repeat right 20px
+          center / 7px 13px;
+      }
+      button {
+        font-weight: 400;
+        text-align: left;
+      }
     }
   }
 </style>

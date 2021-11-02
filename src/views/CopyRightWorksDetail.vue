@@ -239,7 +239,7 @@
   .mask1 {
     position: fixed;
     top: 0;
-    left: 0;
+    max-width: 435px;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
@@ -247,6 +247,7 @@
   }
   .guide-modal {
     position: fixed;
+    max-width: 435px;
     bottom: 0;
     z-index: 2;
     width: 100%;
@@ -449,6 +450,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
+    max-width: 435px;
     button {
       color: white;
       padding: 19px 0px;

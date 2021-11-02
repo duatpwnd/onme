@@ -34,13 +34,14 @@
     position: fixed;
     z-index: 2;
     top: 0;
-    left: 0;
-    width: 100%;
     height: 100%;
+    max-width: 435px;
+    width: 100%;
     background: rgba(0, 0, 0, 0.6);
     .modal {
       position: absolute;
       bottom: 0;
+      max-width: 435px;
       width: 100%;
       .close-area {
         text-align: right;

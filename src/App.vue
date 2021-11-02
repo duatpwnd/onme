@@ -11,13 +11,19 @@
       }
     "
   />
+  <div class="nopy-full-bg"></div>
+  <MainSearch />
   <router-view />
 </template>
 <script lang="ts">
   import { defineComponent, getCurrentInstance, ref } from "vue";
+  import MainSearch from "@/components/main-search/MainSearch.vue";
   import "@lottiefiles/lottie-player";
   export default defineComponent({
     name: "Home",
+    components: {
+      MainSearch,
+    },
     setup() {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
@@ -36,7 +42,10 @@
 
 <style lang="scss">
   @import "@/assets/reset.scss";
-  body {
+  #app {
+    max-width: 435px;
+    min-height: 100%;
+    background: white;
     .lottie-player {
       width: 100%;
       height: 100%;
@@ -67,6 +76,39 @@
         font-size: 17px;
         line-height: 60px;
       }
+    }
+  }
+  @media only screen and (min-width: 1024px) {
+    #app {
+      margin: 0 0 0 calc(55vw - 1px);
+      .nopy-full-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        background: url("~@/assets/images/bg_pc.png") #e9e9e9 no-repeat 50% 50% /
+          cover;
+      }
+    }
+  }
+  @media only screen and (min-width: 421px) and (max-width: 1023px) {
+    #app {
+      margin: 0 auto;
+      .nopy-full-bg {
+        position: fixed;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        background-color: #22232d;
+      }
+    }
+  }
+  @media only screen and (max-width: 1023px) {
+    .home-left-area {
+      display: none;
     }
   }
 </style>

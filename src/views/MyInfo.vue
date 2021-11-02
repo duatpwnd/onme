@@ -242,21 +242,24 @@
       font-size: 24px;
       display: block;
     }
-    .picture-choice {
-      margin: 40px 0;
+    .picture-choice,
+    .basic-btn {
+      margin-top: 40px;
     }
   }
   .mask {
     position: fixed;
-    bottom: 0;
-    width: 100%;
+    top: 0;
     height: 100%;
+    max-width: 435px;
+    width: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 5;
     .nickname-change-modal {
       position: fixed;
       bottom: 0;
       width: 100%;
+      max-width: 435px;
       .body {
         background: white;
         padding: 20px;

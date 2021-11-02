@@ -151,6 +151,7 @@
         margin-top: 20px;
         border-radius: 4px;
         font-weight: 700;
+        border: 1px solid black;
       }
       .signup-email {
         border: 1px solid #ccc;

@@ -9,7 +9,15 @@
     <header>
       <router-link to="/" class="back-btn">뒤로가기</router-link>
       <div class="right-menu">
-        <router-link class="add-btn" to="/register">추가</router-link>
+        <label for="upload" class="add-btn">
+          <input
+            type="file"
+            accept=".png,.jpg,.jpeg"
+            id="upload"
+            ref="file"
+            @change="fileUploadFunc()"
+          />
+        </label>
         <button class="menu-btn" @click="menu = true">메뉴</button>
       </div>
     </header>
@@ -30,10 +38,10 @@
           <img src="@/assets/images/facebook_ico2.png" class="ico2" />
         </span> -->
       </div>
-      <p class="guide-msg"><strong>0개</strong>의 자산을<br />보호중입니다.</p>
+      <p class="guide-msg">
+        <strong>{{ userInfo.data.count_posts }}개</strong>의 자산을<br />보호중입니다.
+      </p>
     </div>
-
-    <MasnoryLayout v-if="masnory" :id="userInfo.data.id" />
     <!-- 유저 정보 :: E -->
     <!-- 0개의 자산일 경우 -->
     <!-- <div class="register-area" v-if="feedList.length == 0">
@@ -43,6 +51,7 @@
 
     <!-- <img src="@/assets/images/feed1.png" /> -->
   </div>
+  <MasnoryLayout v-if="masnory" :id="userInfo.data.id" />
 </template>
 <script lang="ts">
   import {
@@ -67,9 +76,12 @@
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const store = globalProperties?.$store;
+      const getBase64 = globalProperties?.$getBase64;
+      const router = globalProperties?.$router;
       const userStore = computed(() => store.state.userStore.userInfo);
       const masnory = ref(false);
       const menu = ref(false);
+      const file = ref(null);
       let userInfo: { [key: string]: any } = reactive({ data: {} });
       const getMyInfo = () => {
         axios.get(apiUrl.getMyInfo).then((result: any) => {
@@ -78,8 +90,18 @@
           masnory.value = true;
         });
       };
+      const fileUploadFunc = () => {
+        const inputFile = file.value as unknown as HTMLFormElement;
+        const output = getBase64(inputFile.files[0]);
+        output.then((base64: string) => {
+          localStorage.setItem("base64", base64);
+          router.push({
+            path: "/register",
+          });
+        });
+      };
       getMyInfo();
-      return { menu, userInfo, userStore, masnory };
+      return { menu, userInfo, userStore, masnory, file, fileUploadFunc };
     },
   });
 </script>
@@ -95,6 +117,9 @@
     .set-btn {
       margin-top: 40px;
     }
+  }
+  .masnory-wrap {
+    margin-top: 16px;
   }
   .wrap {
     padding: 0 20px;
@@ -155,10 +180,15 @@
         margin: auto;
         height: 24px;
         .add-btn {
-          width: 20px;
+          display: inline-block;
           vertical-align: middle;
+          width: 20px;
+          height: 20px;
           background: url("~@/assets/images/register_btn.png") no-repeat center /
             20px 20px;
+          input[type="file"] {
+            display: none;
+          }
         }
         .menu-btn {
           background: url("~@/assets/images/menu.png") no-repeat center / 24px

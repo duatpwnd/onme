@@ -1,12 +1,12 @@
 <template>
   <div class="wrap">
     <header>
-      <router-link to="/" class="back-btn"></router-link>
+      <button class="back-btn" @click="back()"></button>
       <div class="search-area">
         <input
           type="text"
           v-on:input="keyword = $event.target.value"
-          placeholder="작가, 태그 검색"
+          placeholder="작품, 작가, 태그 검색"
           class="search-input"
           :value="keyword"
           @focus="searchTab = true"
@@ -50,13 +50,13 @@
           최근검색
         </h2>
         <keep-alive>
-          <component :is="currentComponent" :style="styleObject"></component>
+          <component :is="currentComponent" :style="styleObject" in></component>
         </keep-alive>
       </div>
     </div>
-    <div v-show="searchTab == false">
-      <MasnoryLayout :id="userid" :search="tag" />
-    </div>
+  </div>
+  <div v-show="searchTab == false">
+    <MasnoryLayout :id="userid" :search="tag" />
   </div>
 </template>
 <script lang="ts">
@@ -85,6 +85,7 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
+      const router = globalProperties?.$router;
       const debounce = globalProperties?.$debounce();
       const search = ref("");
       const userid = ref<null | number>(null); // 작가검색 리스트의 고유한id값으로 이미지 리스트 뿌리기
@@ -93,6 +94,10 @@
       const currentComponent = ref("post");
       const searchTab = ref(false);
       const emitter = globalProperties?.emitter;
+      const back = () => {
+        router.go(-1);
+        keyword.value = "";
+      };
       const styleObject = computed(() =>
         keyword.value.trim().length == 0
           ? {
@@ -119,21 +124,12 @@
 
       onMounted(() => {
         getHistory();
-        emitter.on(
-          "search-result",
-          (result: { [key: string]: any } | string) => {
-            searchTab.value = false;
-            if (typeof result == "object") {
-              userid.value = result.id;
-              tag.value = null;
-              resultedKeyword.value = result.name + " 검색결과";
-            } else {
-              tag.value = result as string;
-              userid.value = null;
-              resultedKeyword.value = "#" + result + " 검색결과";
-            }
-          }
-        );
+        emitter.on("search-result", (result: string) => {
+          searchTab.value = false;
+          tag.value = result as string;
+          userid.value = null;
+          resultedKeyword.value = "#" + result + " 검색결과";
+        });
       });
       return {
         type,
@@ -145,6 +141,7 @@
         tag,
         resultedKeyword,
         styleObject,
+        back,
         closeSearchTab,
         ...searchHistory(),
       };
@@ -152,85 +149,88 @@
   });
 </script>
 <style scoped lang="scss">
-  :global(#app) {
-    height: 100%;
-  }
-  .wrap {
-    padding: 20px;
-    padding-top: 0;
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: white;
-      padding-top: 20px;
-      .back-btn {
-        position: relative;
-        display: inline-block;
-        vertical-align: middle;
-      }
-      .search-area {
-        background: #f2f4f5;
-        padding: 12px 20px;
-        border-radius: 8px;
-        width: calc(100% - 97px);
-        margin: 0 15px 0 30px;
-        display: inline-block;
-        box-sizing: border-box;
-        .search-input {
-          width: calc(100% - 24px);
-          border: 0;
-          background: #f2f4f5;
-          &::placeholder {
-            color: #9ea7ad;
-          }
-        }
-        .delete-btn {
-          width: 24px;
-          height: 20px;
-          text-align: right;
-          text-indent: 100%;
-          white-space: nowrap;
-          overflow: hidden;
-          background: url("~@/assets/images/clear.png") no-repeat right / 20px
-            20px;
-        }
-      }
-    }
-    .recommend-list {
-      position: relative;
-      margin-top: 10px;
-      .search-tab {
-        position: fixed;
-        left: 0;
-        top: 78px;
-        width: 100%;
-        z-index: 4;
+  #app {
+    .wrap {
+      padding: 20px 0;
+      padding-top: 0;
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
         background: white;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        .recently-search {
-          padding: 0 20px;
-          margin-top: 30px;
+        padding: 20px;
+        height: unset;
+        .back-btn {
+          position: relative;
+          display: inline-block;
+          vertical-align: middle;
         }
-        .history {
-          background: white;
-          overflow-y: auto;
-          padding: 20px 0;
+        .search-area {
+          background: #f2f4f5;
+          padding: 12px 20px;
+          border-radius: 8px;
+          width: calc(100% - 97px);
+          margin: 0 15px 0 30px;
+          display: inline-block;
           box-sizing: border-box;
-        }
-        .tab {
-          padding: 14px 0;
-          border-bottom: 1px solid #9ea7ad;
-          .tab-btn {
-            width: 33.333%;
-            color: #9ea7ad;
-            font-weight: 400;
+          .search-input {
+            width: calc(100% - 24px);
+            border: 0;
+            background: #f2f4f5;
+            &::placeholder {
+              color: #9ea7ad;
+            }
           }
-          .active-tab-btn {
-            font-weight: 700;
-            color: #303538;
+          .delete-btn {
+            width: 24px;
+            height: 20px;
+            text-align: right;
+            text-indent: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            background: url("~@/assets/images/clear.png") no-repeat right / 20px
+              20px;
+          }
+        }
+      }
+      .recommend-list {
+        position: relative;
+        margin-top: 10px;
+        .h2-title {
+          margin-top: 20px;
+          padding: 0 20px;
+        }
+        .search-tab {
+          position: fixed;
+          top: 78px;
+          width: 435px;
+          z-index: 4;
+          background: white;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          .recently-search {
+            padding: 0 20px;
+            margin-top: 30px;
+          }
+          .history {
+            background: white;
+            overflow-y: auto;
+            padding: 20px 0;
+            box-sizing: border-box;
+          }
+          .tab {
+            padding: 14px 0;
+            border-bottom: 1px solid #9ea7ad;
+            .tab-btn {
+              width: 33.333%;
+              color: #9ea7ad;
+              font-weight: 400;
+            }
+            .active-tab-btn {
+              font-weight: 700;
+              color: #303538;
+            }
           }
         }
       }

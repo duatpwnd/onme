@@ -1,60 +1,47 @@
 <template>
-  <div class="wrap">
-    <header>
-      <h1>작품피드</h1>
-      <div class="btn-wrap">
-        <label for="upload" class="add-btn">
-          <input
-            type="file"
-            accept=".png,.jpg,.jpeg"
-            id="upload"
-            ref="file"
-            @change="fileUploadFunc()"
-          />
-        </label>
-        <router-link class="search-btn" to="/search"></router-link>
-        <router-link
-          v-if="userInfo.id == undefined"
-          to="/signIn"
-          class="profile-btn"
-          :style="{
-            'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
-          }"
-        ></router-link>
-        <router-link
-          v-else-if="userInfo.id != undefined && userInfo.image_profile != null"
-          class="profile-btn"
-          :style="[{ 'background-image': `url(${userInfo.image_profile})` }]"
-          to="/myPage"
-          >프로필</router-link
-        >
-        <router-link
-          v-else
-          class="profile-btn"
-          :style="{
-            'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
-          }"
-          to="/myPage"
-          >프로필</router-link
-        >
-      </div>
-    </header>
-    <MasnoryLayout />
-    <!-- <div class="masnory">
-      <div class="mItem" v-for="(list, index) in feedList" :key="index">
-        <router-link :to="{ path: '/detail', query: { id: list.id } }">
-          <img
-            :src="list.original_images[0]"
-            v-if="list.original_images.length > 0"
-          />
-          <img :src="require('@/assets/images/logo.png')" v-else />
-        </router-link>
-      </div>
+  <header>
+    <h1>작품피드</h1>
+    <div class="btn-wrap">
+      <label for="upload" class="add-btn">
+        <input
+          type="file"
+          accept=".png,.jpg,.jpeg"
+          id="upload"
+          ref="file"
+          @change="fileUploadFunc()"
+        />
+      </label>
+      <router-link class="search-btn" to="/search"></router-link>
+      <router-link
+        v-if="userInfo.id == undefined"
+        to="/signIn"
+        class="profile-btn"
+        :style="{
+          'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
+        }"
+      ></router-link>
+      <router-link
+        v-else-if="userInfo.id != undefined && userInfo.image_profile != null"
+        class="profile-btn"
+        :style="[{ 'background-image': `url(${userInfo.image_profile})` }]"
+        to="/myPage"
+        >프로필</router-link
+      >
+      <router-link
+        v-else
+        class="profile-btn"
+        :style="{
+          'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
+        }"
+        to="/myPage"
+        >프로필</router-link
+      >
     </div>
-    <div class="scroll-detecting" ref="detector"></div>
-  </div> -->
+  </header>
+  <div class="wrap">
     <!-- <button class="scan-btn" v-show="scanBtn.show"></button> -->
   </div>
+  <MasnoryLayout />
 </template>
 <script lang="ts">
   import {
@@ -85,6 +72,7 @@
 
   export default defineComponent({
     name: "WorkFeed",
+    inject: ["mq"],
     components: {
       MasnoryLayout,
     },
@@ -129,15 +117,19 @@
   });
 </script>
 <style scoped lang="scss">
-  .wrap {
-    padding: 0 20px;
+  #app {
+    .masnory-wrap {
+      margin-top: 16px;
+    }
     header {
       position: sticky;
+      top: 0;
+      background: white;
       h1 {
         font-size: 18px;
         position: absolute;
         top: 0;
-        left: 0;
+        left: 20px;
         bottom: 0;
         margin: auto;
         height: 20px;
@@ -145,7 +137,7 @@
       .btn-wrap {
         position: absolute;
         top: 0;
-        right: 0;
+        right: 20px;
         bottom: 0;
         margin: auto;
         height: 44px;
@@ -184,27 +176,31 @@
         }
       }
     }
-    .alarm-msg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 14px;
-      padding: 19px 20px;
-      color: white;
-      background: rgba(13, 16, 26, 0.7);
+    .wrap {
+      padding: 0 20px;
+      .alarm-msg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 14px;
+        padding: 19px 20px;
+        color: white;
+        background: rgba(13, 16, 26, 0.7);
+      }
     }
-  }
-  .scan-btn {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 46px;
-    margin: auto;
-    width: 60px;
-    height: 60px;
-    background: url("~@/assets/images/scan_btn.png") no-repeat center / 60px
-      60px;
+
+    .scan-btn {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 46px;
+      margin: auto;
+      width: 60px;
+      height: 60px;
+      background: url("~@/assets/images/scan_btn.png") no-repeat center / 60px
+        60px;
+    }
   }
 </style>

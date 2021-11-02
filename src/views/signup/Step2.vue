@@ -29,7 +29,7 @@
       }"
       >다음</router-link
     >
-    <router-link v-else to="'/signup/step2'" class="next">다음</router-link>
+    <button v-else class="next">다음</button>
   </div>
 </template>
 <script lang="ts">
@@ -77,9 +77,6 @@
   });
 </script>
 <style scoped lang="scss">
-  :global(#app) {
-    height: 100%;
-  }
   .wrap {
     padding: 0 20px;
     .alert-msg {

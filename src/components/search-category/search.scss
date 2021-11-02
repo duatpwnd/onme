@@ -6,7 +6,7 @@
   position: fixed;
   bottom: 0;
   text-align: center;
-  width: 100%;
+  width: 435px;
 }
 .history {
   .history-list {
@@ -42,9 +42,9 @@
       margin-right: 16px;
     }
   }
-  .message {
-    color: #79828a;
+  .no-result {
     text-align: center;
-    margin-top: 250 px;
+    color: #79828a;
+    margin-top: 240px;
   }
 }

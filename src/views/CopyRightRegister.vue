@@ -12,7 +12,7 @@
     "
   ></BaseModal>
 
-  <div v-show="loading">
+  <div v-show="loading" class="loading-box">
     <h2 class="loading-title">NR코드 적용중</h2>
     <img
       src="@/assets/images/loading1.png"
@@ -85,7 +85,7 @@
         태그 최대 5개까지 입력가능
       </p>
       <!-- 태그 리스트 :: S -->
-      <ul class="tag-wrap" ref="detector">
+      <ul class="tag-wrap" ref="detector" v-show="isInputFocus">
         <li
           v-for="(list, index) in tagList"
           :key="index"
@@ -389,216 +389,218 @@
   });
 </script>
 <style scoped lang="scss">
-  .mask {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 2;
-  }
-
-  .loading-title {
-    font-size: 17px;
-    line-height: 60px;
-    height: 60px;
-    text-align: center;
-    position: fixed;
-    top: 0;
-    z-index: 1;
-    width: 100%;
-    background: white;
-  }
-  .loading-background,
-  .loading-ico {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-  }
-  .loading-background {
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    z-index: 1;
-    background-color: white;
-  }
-  .loading-ico {
-    bottom: 0;
-    right: 0;
-    margin: auto;
-    z-index: 3;
-    width: unset;
-    height: 174px;
-  }
-
-  .wrap {
-    header {
-      text-align: center;
-      .back-btn {
-        left: 20px;
-      }
-      .cancel-btn,
-      .confirm-btn {
-        position: absolute;
-        top: 0;
-        right: 20px;
-        bottom: 0;
-        margin: auto;
-      }
-    }
-    .representative-img {
+  #app {
+    .mask {
+      position: fixed;
+      top: 60px;
       width: 100%;
-      max-height: 300px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2;
+      max-width: 435px;
     }
-    .tag,
-    .license,
-    .is-open,
-    .condition-set,
-    .title-input,
-    .certificate {
-      padding: 32px 20px;
-      border-bottom: 1px solid #f2f4f5;
-      .title {
-        font-size: 16px;
+    .loading-box {
+      text-align: center;
+      .loading-title {
+        font-size: 17px;
+        line-height: 60px;
+        height: 60px;
+        text-align: center;
+        position: fixed;
+        top: 0;
+        z-index: 1;
+        width: 100%;
+        max-width: 435px;
+        background: white;
+      }
+      .loading-background,
+      .loading-ico {
+        position: fixed;
+        top: 60px;
+        max-width: 435px;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+      .loading-background {
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+        background-color: white;
+      }
+      .loading-ico {
+        position: relative;
+        z-index: 3;
+        width: 198px;
+        height: 174px;
+        top: calc(50vh - 60px);
       }
     }
-    .tag {
-      .selected-tag {
-        margin-top: 14px;
-        margin-right: 12px;
-        color: #525a61;
-        .close-btn {
-          margin-left: 4px;
-          color: white;
-          font-weight: bold;
-          background: #b8bfc4;
-          border-radius: 50px;
-          width: 16px;
-          text-align: center;
-          height: 16px;
-          line-height: 18px;
-          font-size: 10px;
-          vertical-align: 1px;
+    .wrap {
+      header {
+        text-align: center;
+        .back-btn {
+          left: 20px;
+        }
+        .cancel-btn,
+        .confirm-btn {
+          position: absolute;
+          top: 0;
+          right: 20px;
+          bottom: 0;
+          margin: auto;
         }
       }
-      .prefix {
-        display: inline-block;
-        width: 12px;
+      .representative-img {
+        width: 100%;
+        max-height: 300px;
       }
-      .tag-input {
-        border: 0;
-        margin-left: 2px;
+      .tag,
+      .license,
+      .is-open,
+      .condition-set,
+      .title-input,
+      .certificate {
+        padding: 32px 20px;
+        border-bottom: 1px solid #f2f4f5;
+        .title {
+          font-size: 16px;
+        }
       }
-      .guide-message {
-        position: absolute;
-        bottom: -40px;
-        color: white;
-      }
-      .tag-wrap {
-        margin-top: 30px;
-        max-height: 324px;
-        overflow-y: auto;
-        .tag-list {
-          &:not(:first-child) {
-            margin-top: 16px;
+      .tag {
+        .selected-tag {
+          margin-top: 14px;
+          margin-right: 12px;
+          color: #525a61;
+          .close-btn {
+            margin-left: 4px;
+            color: white;
+            font-weight: bold;
+            background: #b8bfc4;
+            border-radius: 50px;
+            width: 16px;
+            text-align: center;
+            height: 16px;
+            line-height: 18px;
+            font-size: 10px;
+            vertical-align: 1px;
           }
-          .tag-info {
-            display: inline-block;
-            vertical-align: middle;
-            .works {
-              display: block;
-              font-size: 12px;
-              color: #79828a;
-              margin-top: 4px;
+        }
+        .prefix {
+          display: inline-block;
+          width: 12px;
+        }
+        .tag-input {
+          border: 0;
+          margin-left: 2px;
+        }
+        .guide-message {
+          position: absolute;
+          bottom: -40px;
+          color: white;
+        }
+        .tag-wrap {
+          margin-top: 30px;
+          max-height: 324px;
+          overflow-y: auto;
+          .tag-list {
+            &:not(:first-child) {
+              margin-top: 16px;
+            }
+            .tag-info {
+              display: inline-block;
+              vertical-align: middle;
+              .works {
+                display: block;
+                font-size: 12px;
+                color: #79828a;
+                margin-top: 4px;
+              }
+            }
+            .tag-img {
+              margin-right: 16px;
             }
           }
-          .tag-img {
-            margin-right: 16px;
+          .loading1 {
+            position: absolute;
+            bottom: 32px;
+            text-align: center;
+            width: 100%;
           }
         }
-        .loading1 {
-          position: absolute;
-          bottom: 32px;
-          text-align: center;
-          width: 100%;
-        }
       }
-    }
-    .active {
-      position: absolute;
-      top: 60px;
-      left: 0;
-      background: white;
-      width: 100%;
-      box-sizing: border-box;
-      z-index: 10;
-    }
-    .title-input {
-      input {
-        width: 100%;
-        border: 0;
-      }
-    }
-    .is-open,
-    .license {
-      position: relative;
-      ::v-deep .switch-btn {
+      .active {
         position: absolute;
-        top: 0;
-        right: 20px;
-        bottom: 0;
-        margin: auto;
-        height: 32px;
-        .field-id {
-          color: #9ea7ad;
+        top: 60px;
+        background: white;
+        width: 100%;
+        box-sizing: border-box;
+        z-index: 10;
+        max-width: 435px;
+      }
+      .title-input {
+        input {
+          width: 100%;
+          border: 0;
         }
       }
-    }
-    .condition-set {
-      .base-checkbox {
-        width: 50%;
-        margin-top: 24px;
-      }
-    }
-    .certificate {
-      .btn-area {
-        margin-top: 24px;
-        &:after {
-          display: block;
-          content: "";
-          clear: both;
-        }
-        button {
-          width: 48.5%;
-          font-size: 14px;
-          color: #79828a;
-          border-radius: 4px;
-          border: 1px solid #dbdfe1;
-          padding: 13px 0;
-        }
-        .issued-btn {
-          float: left;
-        }
-        .unissued-btn {
-          float: right;
-        }
-        .active {
-          border: 1px solid #111111;
-          color: #303538;
+      .is-open,
+      .license {
+        position: relative;
+        ::v-deep .switch-btn {
+          position: absolute;
+          top: 0;
+          right: 20px;
+          bottom: 0;
+          margin: auto;
+          height: 32px;
+          .field-id {
+            color: #9ea7ad;
+          }
         }
       }
-    }
-    .protect-btn {
-      margin-top: 188px;
-      background: black;
-      color: white;
-      font-size: 18px;
-      width: 100%;
-      text-align: center;
-      padding: 18px 0;
+      .condition-set {
+        .base-checkbox {
+          width: 50%;
+          margin-top: 24px;
+        }
+      }
+      .certificate {
+        .btn-area {
+          margin-top: 24px;
+          &:after {
+            display: block;
+            content: "";
+            clear: both;
+          }
+          button {
+            width: 48.5%;
+            font-size: 14px;
+            color: #79828a;
+            border-radius: 4px;
+            border: 1px solid #dbdfe1;
+            padding: 13px 0;
+          }
+          .issued-btn {
+            float: left;
+          }
+          .unissued-btn {
+            float: right;
+          }
+          .active {
+            border: 1px solid #111111;
+            color: #303538;
+          }
+        }
+      }
+      .protect-btn {
+        margin-top: 188px;
+        background: black;
+        color: white;
+        font-size: 18px;
+        width: 100%;
+        text-align: center;
+        padding: 18px 0;
+      }
     }
   }
 </style>

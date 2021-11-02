@@ -18,16 +18,16 @@
         <button class="view">보기</button>
       </div>
     </div>
+    <router-link v-if="agreeIncludes == false" to="/signup/step1" class="agree"
+      >동의하고 계속 진행</router-link
+    >
+    <router-link
+      v-else
+      :to="{ path: '/signup/step2', query: { agree: selected.length } }"
+      class="agree active"
+      >동의하고 계속 진행</router-link
+    >
   </div>
-  <router-link v-if="agreeIncludes == false" to="/signup/step1" class="agree"
-    >동의하고 계속 진행</router-link
-  >
-  <router-link
-    v-else
-    :to="{ path: '/signup/step2', query: { agree: selected.length } }"
-    class="agree active"
-    >동의하고 계속 진행</router-link
-  >
 </template>
 <script lang="ts">
   import { computed, defineComponent, onMounted, ref } from "vue";
@@ -95,15 +95,14 @@
     }
   }
   .agree {
-    position: fixed;
-    left: 0;
-    bottom: 0;
     color: white;
     background: #b8bfc4;
     text-align: center;
     width: 100%;
     padding: 16px 0;
     font-size: 18px;
+    border-radius: 4px;
+    margin-top: 40px;
   }
   .active {
     background: black;

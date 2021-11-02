@@ -5,10 +5,10 @@
       <h1 class="header-title">설정</h1>
     </header>
     <div class="setting">
-      <div class="row">
+      <!-- <div class="row">
         서비스 이용 알림
         <BaseSwitcherButton v-model="isShow" value="공개" />
-      </div>
+      </div> -->
       <router-link to="/accountManage" class="row account-manage"
         >계정관리</router-link
       >
@@ -31,9 +31,6 @@
 
   export default defineComponent({
     name: "Setting",
-    components: {
-      BaseSwitcherButton,
-    },
     setup() {
       const isShow = ref(true);
       return { isShow };
@@ -41,42 +38,44 @@
   });
 </script>
 <style scoped lang="scss">
-  .wrap {
-    header {
-      text-align: center;
-      .back-btn {
-        left: 20px;
-      }
-    }
-    .setting {
-      .row {
-        border-bottom: 1px solid #f2f4f5;
-        padding: 24px 20px;
-        position: relative;
-        .version {
-          position: absolute;
-          top: 0;
-          right: 20px;
-          bottom: 0;
-          margin: auto;
-          height: 22px;
-          color: #256ee8;
-        }
-        .switch-btn {
-          position: absolute;
-          top: 0;
-          right: 20px;
-          bottom: 0;
-          margin: auto;
-          height: 32px;
+  #app {
+    .wrap {
+      header {
+        text-align: center;
+        .back-btn {
+          left: 20px;
         }
       }
-    }
-    .account-manage {
-      width: 100%;
-      box-sizing: border-box;
-      background: url("~@/assets/images/arrow_ico.png") no-repeat right 20px
-        center / 7px 13px;
+      .setting {
+        .row {
+          border-bottom: 1px solid #f2f4f5;
+          padding: 24px 20px;
+          position: relative;
+          .version {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            bottom: 0;
+            margin: auto;
+            height: 22px;
+            color: #256ee8;
+          }
+          .switch-btn {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            bottom: 0;
+            margin: auto;
+            height: 32px;
+          }
+        }
+      }
+      .account-manage {
+        width: 100%;
+        box-sizing: border-box;
+        background: url("~@/assets/images/arrow_ico.png") no-repeat right 20px
+          center / 7px 13px;
+      }
     }
   }
 </style>

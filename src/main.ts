@@ -5,6 +5,7 @@ import store from "./store";
 import apiUrl from "@/assets/js/apiUrl";
 import axios from "axios";
 import { VueCookieNext } from "vue-cookie-next";
+import { Vue3Mq, MqResponsive } from "vue3-mq";
 import * as Sentry from "@sentry/vue";
 import mitt from "mitt";
 import { Integrations } from "@sentry/tracing";
@@ -16,6 +17,13 @@ const emitter = mitt();
 app
   .use(store)
   .use(globalPlugin)
+  .use(Vue3Mq, {
+    breakpoints: {
+      ttt: 1025,
+      tablet: 1023,
+      s: 500,
+    },
+  })
   .use(router)
   .use(VueCookieNext)
   .use(VueLazyLoad)
@@ -24,7 +32,7 @@ app.use(VueClipboard, {
   autoSetContainer: true,
   appendToBody: true,
 });
-
+app.component("mq-responsive", MqResponsive);
 Sentry.init({
   environment: process.env.NODE_ENV,
   app,

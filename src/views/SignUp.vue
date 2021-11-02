@@ -32,19 +32,21 @@
   });
 </script>
 <style scoped lang="scss">
-  header {
-    text-align: center;
-    .back-btn {
-      left: 20px;
+  #app {
+    header {
+      text-align: center;
+      .back-btn {
+        left: 20px;
+      }
     }
-  }
-  .step {
-    color: #ccc;
-    margin-top: 52px;
-    margin-bottom: 20px;
-    padding: 0 20px;
-    b {
-      color: #303538;
+    .step {
+      color: #ccc;
+      margin-top: 52px;
+      margin-bottom: 20px;
+      padding: 0 20px;
+      b {
+        color: #303538;
+      }
     }
   }
 </style>

@@ -8,16 +8,13 @@
         createHistory('user', {
           searched_user: list.user == undefined ? list.id : list.searched_user,
         });
-        search({
-          id: list.searched_user,
-          name: list.username,
-        });
+        search(list.user == undefined ? list.id : list.searched_user);
       "
     >
       <img src="@/assets/images/ex1.png" alt="" title="" class="tag-img" />
       <div class="user-info">
         <b class="user-name">{{ list.username }}</b>
-        <span class="works">저작물 1개</span>
+        <span class="works">작품 {{ list.count_posts }}개</span>
       </div>
       <button
         class="close-btn"
@@ -25,6 +22,12 @@
         @click.stop="deleteHistory(list.id)"
       ></button>
     </li>
+    <p
+      class="no-result"
+      v-show="userList.length == 0 && keyword.trim().length > 0"
+    >
+      검색 결과가 없습니다.
+    </p>
     <div class="loading1" v-show="loading">
       <img src="@/assets/images/paging_loading_ico1.png" />
     </div>
@@ -40,7 +43,9 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const emitter = globalProperties?.emitter;
       const scrollDetect = globalProperties?.$scrollDetect;
+      const router = globalProperties?.$router;
       let {
+        keyword,
         isUserLastPage,
         userList,
         detector,
@@ -50,8 +55,13 @@
         deleteHistory,
         userSearch,
       } = searchHistory();
-      const search = (obj: { [key: string]: any }) => {
-        emitter.emit("search-result", obj);
+      const search = (id: number) => {
+        router.push({
+          path: "/userDetail",
+          query: {
+            id: id,
+          },
+        });
       };
       onActivated(() => {
         console.log("Writer컴포넌트 생성");
@@ -64,6 +74,7 @@
         });
       });
       return {
+        keyword,
         detector,
         userList,
         loading,

@@ -1,18 +1,21 @@
 <template>
-  <div class="masnory">
-    <div class="mItem" v-for="(list, index) in feedList" :key="index">
-      <router-link :to="{ path: '/detail', query: { id: list.id } }">
-        <img
-          :src="list.original_images[0]"
-          v-if="list.original_images.length > 0"
-        />
-        <img :src="require('@/assets/images/logo.png')" v-else />
-      </router-link>
+  <div class="masnory-wrap">
+    <div class="masnory">
+      <div class="mItem" v-for="(list, index) in feedList" :key="index">
+        <router-link :to="{ path: '/detail', query: { id: list.id } }">
+          <img
+            :src="list.original_images[0]"
+            v-if="list.original_images.length > 0"
+          />
+          <img :src="require('@/assets/images/logo.png')" v-else />
+        </router-link>
+      </div>
     </div>
-  </div>
-  <div class="scroll-detecting" ref="detector"></div>
-  <div class="loading" v-show="loading">
-    <img src="@/assets/images/paging_loading_ico.png" />
+    <div class="scroll-detecting" ref="detector"></div>
+    <div class="loading" v-show="loading">
+      <img src="@/assets/images/paging_loading_ico.png" />
+    </div>
+    <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p>
   </div>
 </template>
 <script lang="ts">
@@ -72,7 +75,7 @@
             params: {
               user: props.id,
               page: page.value,
-              page_size: 10,
+              page_size: 30,
               search: props.search,
             },
           })
@@ -99,16 +102,21 @@
   });
 </script>
 <style scoped lang="scss">
+  .no-result {
+    text-align: center;
+    color: #79828a;
+    margin-top: 240px;
+  }
   .loading {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
+    max-width: 435px;
     background: rgba(0, 0, 0, 0.5);
     z-index: 2;
     img {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       right: 0;
@@ -117,9 +125,9 @@
     }
   }
   .masnory {
-    margin-top: 16px;
     column-count: 2;
     column-gap: 16px;
+    padding: 0 20px;
     .mItem {
       display: inline-block;
       margin-bottom: 16px;

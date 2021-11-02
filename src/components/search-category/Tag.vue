@@ -14,7 +14,7 @@
       <img src="@/assets/images/tag.png" alt="" title="" class="tag-img" />
       <div class="tag-info">
         <b class="tag-title"><b>#</b>{{ list.title }}</b>
-        <span class="works">저작물 1개</span>
+        <span class="works">작품 {{ list.count_posts }}개</span>
       </div>
       <button
         class="close-btn"
@@ -25,6 +25,12 @@
     <div class="loading1" v-show="loading">
       <img src="@/assets/images/paging_loading_ico1.png" />
     </div>
+    <p
+      class="no-result"
+      v-show="tagList.length == 0 && keyword.trim().length > 0"
+    >
+      검색 결과가 없습니다.
+    </p>
   </ul>
 </template>
 <script lang="ts">
@@ -43,6 +49,7 @@
         detector,
         page,
         loading,
+        keyword,
         createHistory,
         deleteHistory,
         tagSearch,
@@ -66,6 +73,7 @@
         detector,
         tagList,
         loading,
+        keyword,
       };
     },
   });

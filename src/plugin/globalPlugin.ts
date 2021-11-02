@@ -54,14 +54,16 @@ export default {
       element: HTMLElement,
       callback: () => void
     ) => {
-      element.addEventListener("scroll", () => {
-        if (
-          element.clientHeight + Math.ceil(element.scrollTop) >=
-          element.scrollHeight
-        ) {
-          callback();
-        }
-      });
+      if (element != null) {
+        element.addEventListener("scroll", () => {
+          if (
+            element.clientHeight + Math.ceil(element.scrollTop) >=
+            element.scrollHeight
+          ) {
+            callback();
+          }
+        });
+      }
     };
   },
 };

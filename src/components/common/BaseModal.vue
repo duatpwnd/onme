@@ -43,15 +43,16 @@
 <style scoped lang="scss">
   .mask {
     position: fixed;
-    top: 0;
-    left: 0;
     z-index: 2;
+    top: 0;
+    max-width: 435px;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     .modal {
       background: white;
-      position: fixed;
+      position: absolute;
+      max-width: 380px;
       width: 90%;
       top: 50%;
       left: 50%;
