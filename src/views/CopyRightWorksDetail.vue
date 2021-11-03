@@ -59,12 +59,15 @@
   <!-- 유저 정보 :: S -->
   <div class="user-info">
     <div class="user-intro">
-      <img
-        src="@/assets/images/profile_img.png"
-        alt="유저프로필"
-        title="유저프로필"
-      />
-      <span class="user-name">{{ detailInfo.username }}</span>
+      <span @click="userClickAdd()">
+        <img
+          src="@/assets/images/profile_img.png"
+          alt="유저프로필"
+          title="유저프로필"
+        />
+        <span class="user-name">{{ detailInfo.username }}</span>
+      </span>
+      <span class="created">{{ detailInfo.created }}</span>
     </div>
   </div>
   <!-- 유저 정보 :: E -->
@@ -207,7 +210,19 @@
             router.push("/");
           });
       };
-
+      const userClickAdd = () => {
+        axios
+          .post(apiUrl.userSearch + `/${res.detailInfo.user}/click`)
+          .then((result: any) => {
+            console.log("유저클릭결과:", result.data.data);
+          });
+        router.push({
+          path: "/userDetail",
+          query: {
+            id: res.detailInfo.user,
+          },
+        });
+      };
       const getDetailList = (id: number) => {
         axios.get(apiUrl.feedList + `/${id}`).then((result: any) => {
           console.log("상세조회 결과:", result.data.data);
@@ -231,6 +246,7 @@
         download,
         toastModal,
         postDelete,
+        userClickAdd,
       };
     },
   });
@@ -337,24 +353,24 @@
     .user-intro {
       position: relative;
       .user-name {
-        width: 185px;
+        max-width: 185px;
         font-weight: 700;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         margin-left: 16px;
         vertical-align: middle;
+        margin-right: 12px;
       }
-      .sns-link {
+      .created {
+        font-size: 12px;
+        color: #9ea7ad;
         position: absolute;
-        right: 0;
         top: 0;
+        right: 0;
         bottom: 0;
         margin: auto;
-        height: 24px;
-        .ico1 {
-          margin-right: 16px;
-        }
+        height: 22px;
       }
     }
   }
