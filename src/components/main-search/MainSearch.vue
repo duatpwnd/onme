@@ -1,10 +1,8 @@
 <template>
-  <div class="home-left-area">
-    <img
-      src="@/assets/images/pc_logo.png"
-      class="logo"
-      @click="router.push('/')"
-    />
+  <article class="home-left-area">
+    <h1 class="logo">
+      <img src="@/assets/images/pc_logo.png" @click="router.push('/')" />
+    </h1>
     <h2 class="title">NPPY 웹사이트<br />타이틀 영역</h2>
     <p class="message">
       NOPY 웹사이트 서브 타이틀 영역입니다. NOPY가 어떤 서비스인지 설명할 문구를
@@ -14,36 +12,36 @@
       <input
         type="text"
         class="text-input"
+        v-model="text"
         placeholder="어떤 작품을 찾으세요?"
       />
-      <button class="search-btn"></button>
+      <button class="search-btn" @click="search()"></button>
     </div>
     <div class="btn-wrap">
       <button class="btn apple-download-btn"></button>
       <button class="btn google-download-btn"></button>
     </div>
-  </div>
+  </article>
 </template>
 <script lang="ts">
-  import {
-    defineComponent,
-    onMounted,
-    reactive,
-    ref,
-    getCurrentInstance,
-  } from "vue";
-  import { useStore } from "vuex";
+  import { ref, defineComponent, getCurrentInstance } from "vue";
   export default defineComponent({
-    name: "HelloWorld",
+    name: "MainSearch",
     setup() {
       console.log("setup호출");
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
-      const axios = globalProperties?.axios;
-      const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
       const router = globalProperties?.$router;
-      return { router };
+      const text = ref("");
+      const search = () => {
+        router.push({
+          path: "/search",
+          query: {
+            keyword: text.value,
+          },
+        });
+      };
+      return { router, text, search };
     },
   });
 </script>
@@ -75,7 +73,7 @@
       width: 530px;
       margin-top: 3.1vh;
       .text-input {
-        color: #5a5d67;
+        color: white;
         font-size: 20px;
         width: calc(100% - 80px);
         vertical-align: middle;
@@ -85,6 +83,9 @@
         border: 0;
         border-top-left-radius: 12px;
         border-bottom-left-radius: 12px;
+        &::placeholder {
+          color: #5a5d67;
+        }
       }
       .search-btn {
         vertical-align: middle;
