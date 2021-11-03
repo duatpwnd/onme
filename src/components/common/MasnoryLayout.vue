@@ -2,7 +2,10 @@
   <div class="masnory-wrap">
     <div class="masnory">
       <div class="mItem" v-for="(list, index) in feedList" :key="index">
-        <router-link :to="{ path: '/detail', query: { id: list.id } }">
+        <router-link
+          :to="{ path: '/detail', query: { id: list.id } }"
+          @click="clickAdd(list.id)"
+        >
           <img
             :src="list.original_images[0]"
             v-if="list.original_images.length > 0"
@@ -15,7 +18,7 @@
     <div class="loading" v-show="loading">
       <img src="@/assets/images/paging_loading_ico.png" />
     </div>
-    <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p>
+    <!-- <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p> -->
   </div>
 </template>
 <script lang="ts">
@@ -37,7 +40,7 @@
       },
     },
     components: {},
-    setup(props) {
+    setup(props, context) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
@@ -66,14 +69,20 @@
           infiniteHandler();
         }
       );
-
+      const clickAdd = (id: number) => {
+        axios
+          .post(`${apiUrl.feedList}/${id}/click`)
+          .then((response: { [key: string]: any }) => {
+            console.log("게시물클릭결과:", response.data.data);
+          });
+      };
       const infiniteHandler = () => {
         loading.value = true;
         isLastPage.value = true;
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
-              user: props.id,
+              user: props.id, // 작가찾기
               page: page.value,
               page_size: 30,
               search: props.search,
@@ -97,7 +106,7 @@
       onMounted(() => {
         io.observe(detector.value as unknown as HTMLElement);
       });
-      return { loading, feedList, detector };
+      return { loading, feedList, detector, clickAdd };
     },
   });
 </script>
