@@ -1,4 +1,7 @@
-import { getCurrentInstance, ref, reactive } from "vue";
+import { ref } from "vue";
+import { useRoute } from "vue-router";
+import axios from "axios";
+import apiUrl from "@/assets/js/apiUrl";
 const keyword = ref("");
 const allList = ref<{ [key: string]: any }[]>([]);
 const tagList = ref<{ [key: string]: any }[]>([]);
@@ -9,11 +12,7 @@ export default function searchHistory() {
   const detector = ref(null);
   const loading = ref(false);
   const page = ref(1);
-  const globalProperties =
-    getCurrentInstance()?.appContext.config.globalProperties;
-  const axios = globalProperties?.axios;
-  const apiUrl = globalProperties?.apiUrl;
-  // 스크롤 감지
+  const route = useRoute();
   // 태그 검색 찾기
   const tagSearch = () => {
     isTagLastPage.value = false;
@@ -62,7 +61,7 @@ export default function searchHistory() {
       });
   };
   const searchType = () => {
-    console.log("searchType실행");
+    console.log("searchType실행", keyword.value);
     if (keyword.value.trim().length > 0) {
       allList.value = [];
       userList.value = [];

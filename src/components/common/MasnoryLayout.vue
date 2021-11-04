@@ -2,7 +2,10 @@
   <div class="masnory-wrap">
     <div class="masnory">
       <div class="mItem" v-for="(list, index) in feedList" :key="index">
-        <router-link :to="{ path: '/detail', query: { id: list.id } }">
+        <router-link
+          :to="{ path: '/detail', query: { id: list.id } }"
+          @click="clickAdd(list.id)"
+        >
           <img
             :src="list.original_images[0]"
             v-if="list.original_images.length > 0"
@@ -15,7 +18,7 @@
     <div class="loading" v-show="loading">
       <img src="@/assets/images/paging_loading_ico.png" />
     </div>
-    <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p>
+    <!-- <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p> -->
   </div>
 </template>
 <script lang="ts">
@@ -26,6 +29,7 @@
     getCurrentInstance,
     watch,
   } from "vue";
+  import { useRoute } from "vue-router";
   export default defineComponent({
     name: "MasnoryLayout",
     props: {
@@ -44,6 +48,8 @@
       const apiUrl = globalProperties?.apiUrl;
       const detector = ref(null || HTMLElement);
       const page = ref(1);
+      const debounce = globalProperties?.$debounce();
+      const route = useRoute();
       const loading = ref(false);
       const isLastPage = ref(false);
       const feedList = ref<{ [key: string]: any }>([]);
@@ -60,28 +66,36 @@
       watch(
         () => [props.id, props.search],
         (curr, prev) => {
-          console.log("감시자:", curr, prev);
-          page.value = 1;
-          feedList.value = [];
-          infiniteHandler();
+          debounce(() => {
+            console.log("감시자:", curr, prev);
+            page.value = 1;
+            feedList.value = [];
+            infiniteHandler();
+          });
         }
       );
-
+      const clickAdd = (id: number) => {
+        axios
+          .post(`${apiUrl.feedList}/${id}/click`)
+          .then((response: { [key: string]: any }) => {
+            console.log("게시물클릭결과:", response.data.data);
+          });
+      };
       const infiniteHandler = () => {
         loading.value = true;
         isLastPage.value = true;
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
-              user: props.id,
+              user: props.id, // 작가찾기
               page: page.value,
               page_size: 30,
-              search: props.search,
+              search: props.search || route.query.keyword,
             },
           })
           .then((response: { [key: string]: any }) => {
             if (response != undefined) {
-              console.log("이미지리스트결과:", response);
+              console.log("이미지리스트결과:", response, route.query.keyword);
               feedList.value.push(...response.data.data);
               page.value += 1;
               loading.value = false;
@@ -97,7 +111,7 @@
       onMounted(() => {
         io.observe(detector.value as unknown as HTMLElement);
       });
-      return { loading, feedList, detector };
+      return { loading, feedList, detector, clickAdd };
     },
   });
 </script>

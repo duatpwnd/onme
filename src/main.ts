@@ -14,16 +14,14 @@ import VueClipboard from "vue3-clipboard";
 import VueLazyLoad from "vue3-lazyload";
 const app = createApp(App);
 const emitter = mitt();
+app.config.globalProperties.axios = axios;
+app.config.globalProperties.apiUrl = apiUrl;
+app.config.globalProperties.emitter = emitter;
+app.component("mq-responsive", MqResponsive);
 app
   .use(store)
   .use(globalPlugin)
-  .use(Vue3Mq, {
-    breakpoints: {
-      ttt: 1025,
-      tablet: 1023,
-      s: 500,
-    },
-  })
+  .use(Vue3Mq)
   .use(router)
   .use(VueCookieNext)
   .use(VueLazyLoad)
@@ -32,7 +30,7 @@ app.use(VueClipboard, {
   autoSetContainer: true,
   appendToBody: true,
 });
-app.component("mq-responsive", MqResponsive);
+
 Sentry.init({
   environment: process.env.NODE_ENV,
   app,
@@ -48,9 +46,7 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
 });
-app.config.globalProperties.axios = axios;
-app.config.globalProperties.apiUrl = apiUrl;
-app.config.globalProperties.emitter = emitter;
+
 app.config.errorHandler = (err, vm, info) => {
   console.log("에러:", err, "정보:", info);
 };

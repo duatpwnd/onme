@@ -26,6 +26,7 @@
         </p>
         <input
           type="password"
+          @keyup.enter="signInSubmit()"
           v-model="userInput.userPw"
           class="user-pw"
           placeholder="비밀번호 입력"
