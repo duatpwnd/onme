@@ -29,7 +29,6 @@
       </div>
       <button @click="closeSearchTab()" v-show="searchTab">취소</button>
     </header>
-
     <div class="recommend-list">
       <h2 class="h2-title">{{ resultedKeyword }}</h2>
       <div v-show="searchTab" class="search-tab">
@@ -67,6 +66,7 @@
     getCurrentInstance,
     computed,
   } from "vue";
+  import { useRoute } from "vue-router";
   import Post from "@/components/search-category/Post.vue";
   import User from "@/components/search-category/User.vue";
   import Tag from "@/components/search-category/Tag.vue";
@@ -83,9 +83,8 @@
     setup() {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
-      const axios = globalProperties?.axios;
-      const apiUrl = globalProperties?.apiUrl;
       const router = globalProperties?.$router;
+      const route = useRoute();
       const debounce = globalProperties?.$debounce();
       const search = ref("");
       const userid = ref<null | number>(null); // 작가검색 리스트의 고유한id값으로 이미지 리스트 뿌리기
@@ -94,9 +93,10 @@
       const currentComponent = ref("post");
       const searchTab = ref(false);
       const emitter = globalProperties?.emitter;
-      const back = () => {
-        router.go(-1);
-        keyword.value = "";
+      const type = {
+        post: "작품",
+        user: "작가",
+        tag: "태그",
       };
       const styleObject = computed(() =>
         keyword.value.trim().length == 0
@@ -107,11 +107,7 @@
               height: "calc(100% - 131px)",
             }
       );
-      const type = {
-        post: "작품",
-        user: "작가",
-        tag: "태그",
-      };
+
       // 태그검색
       const { keyword, getHistory } = searchHistory();
 
@@ -120,15 +116,19 @@
         searchTab.value = false;
         getHistory();
       };
-      // 검색히스토리 얻기
-
+      const back = () => {
+        router.go(-1);
+        keyword.value = "";
+      };
       onMounted(() => {
-        getHistory();
+        if (keyword.value.trim().length == 0) {
+          getHistory();
+        }
         emitter.on("search-result", (result: string) => {
           searchTab.value = false;
           tag.value = result as string;
           userid.value = null;
-          resultedKeyword.value = "#" + result + " 검색결과";
+          resultedKeyword.value = result + " 검색결과";
         });
       });
       return {
@@ -141,6 +141,7 @@
         tag,
         resultedKeyword,
         styleObject,
+        route,
         back,
         closeSearchTab,
         ...searchHistory(),

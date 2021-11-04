@@ -14,6 +14,7 @@
         class="text-input"
         v-model="text"
         placeholder="어떤 작품을 찾으세요?"
+        @keyup.enter="search()"
       />
       <button class="search-btn" @click="search()"></button>
     </div>
@@ -32,14 +33,20 @@
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const router = globalProperties?.$router;
+      const emitter = globalProperties?.emitter;
       const text = ref("");
       const search = () => {
-        router.push({
-          path: "/search",
-          query: {
-            keyword: text.value,
+        router.push(
+          {
+            path: "/search",
+            query: {
+              keyword: text.value.trim(),
+            },
           },
-        });
+          () => {
+            console.log("갔뜨아");
+          }
+        );
       };
       return { router, text, search };
     },
@@ -88,6 +95,7 @@
         }
       }
       .search-btn {
+        cursor: pointer;
         vertical-align: middle;
         width: 80px;
         height: 80px;

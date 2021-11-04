@@ -43,6 +43,7 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const emitter = globalProperties?.emitter;
       const scrollDetect = globalProperties?.$scrollDetect;
+      const router = globalProperties?.$router;
       let {
         isTagLastPage,
         tagList,
@@ -56,6 +57,12 @@
       } = searchHistory();
       const search = (title: string) => {
         emitter.emit("search-result", title);
+        router.push({
+          path: "/search",
+          query: {
+            keyword: title,
+          },
+        });
       };
       onActivated(() => {
         scrollDetect(detector.value, () => {

@@ -34,7 +34,12 @@
   </ul>
 </template>
 <script lang="ts">
-  import { defineComponent, getCurrentInstance, onActivated } from "vue";
+  import {
+    defineComponent,
+    getCurrentInstance,
+    onActivated,
+    onMounted,
+  } from "vue";
   import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
     name: "User Tab",
@@ -72,6 +77,9 @@
             userSearch();
           }
         });
+      });
+      onMounted(() => {
+        console.log("user onmounted");
       });
       return {
         keyword,

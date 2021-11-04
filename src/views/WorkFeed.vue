@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>작품피드</h1>
+    <h2>작품피드</h2>
     <div class="btn-wrap">
       <label for="upload" class="add-btn">
         <input
@@ -72,7 +72,6 @@
 
   export default defineComponent({
     name: "WorkFeed",
-    inject: ["mq"],
     components: {
       MasnoryLayout,
     },
@@ -125,7 +124,7 @@
       position: sticky;
       top: 0;
       background: white;
-      h1 {
+      h2 {
         font-size: 18px;
         position: absolute;
         top: 0;

@@ -546,7 +546,7 @@
       .is-open,
       .license {
         position: relative;
-        ::v-deep .switch-btn {
+        :deep .switch-btn {
           position: absolute;
           top: 0;
           right: 20px;

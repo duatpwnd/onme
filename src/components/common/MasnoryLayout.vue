@@ -29,6 +29,7 @@
     getCurrentInstance,
     watch,
   } from "vue";
+  import { useRoute } from "vue-router";
   export default defineComponent({
     name: "MasnoryLayout",
     props: {
@@ -40,13 +41,15 @@
       },
     },
     components: {},
-    setup(props, context) {
+    setup(props) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
       const detector = ref(null || HTMLElement);
       const page = ref(1);
+      const debounce = globalProperties?.$debounce();
+      const route = useRoute();
       const loading = ref(false);
       const isLastPage = ref(false);
       const feedList = ref<{ [key: string]: any }>([]);
@@ -63,10 +66,12 @@
       watch(
         () => [props.id, props.search],
         (curr, prev) => {
-          console.log("감시자:", curr, prev);
-          page.value = 1;
-          feedList.value = [];
-          infiniteHandler();
+          debounce(() => {
+            console.log("감시자:", curr, prev);
+            page.value = 1;
+            feedList.value = [];
+            infiniteHandler();
+          });
         }
       );
       const clickAdd = (id: number) => {
@@ -85,12 +90,12 @@
               user: props.id, // 작가찾기
               page: page.value,
               page_size: 30,
-              search: props.search,
+              search: props.search || route.query.keyword,
             },
           })
           .then((response: { [key: string]: any }) => {
             if (response != undefined) {
-              console.log("이미지리스트결과:", response);
+              console.log("이미지리스트결과:", response, route.query.keyword);
               feedList.value.push(...response.data.data);
               page.value += 1;
               loading.value = false;

@@ -21,13 +21,7 @@ app.component("mq-responsive", MqResponsive);
 app
   .use(store)
   .use(globalPlugin)
-  .use(Vue3Mq, {
-    breakpoints: {
-      ttt: 1025,
-      tablet: 1023,
-      s: 500,
-    },
-  })
+  .use(Vue3Mq)
   .use(router)
   .use(VueCookieNext)
   .use(VueLazyLoad)
