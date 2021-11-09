@@ -10,7 +10,6 @@
             :src="list.original_images[0]"
             v-if="list.original_images.length > 0"
           />
-          <img :src="require('@/assets/images/logo.png')" v-else />
         </router-link>
       </div>
     </div>
@@ -18,7 +17,9 @@
     <div class="loading" v-show="loading">
       <img src="@/assets/images/paging_loading_ico.png" />
     </div>
-    <!-- <p class="no-result" v-show="feedList.length == 0">검색 결과가 없습니다.</p> -->
+    <p class="no-result" v-if="feedList.length == 0 && route.name == 'Search'">
+      검색 결과가 없습니다.
+    </p>
   </div>
 </template>
 <script lang="ts">
@@ -40,7 +41,6 @@
         type: String,
       },
     },
-    components: {},
     setup(props) {
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
@@ -54,8 +54,12 @@
       const isLastPage = ref(false);
       const feedList = ref<{ [key: string]: any }>([]);
       const io = new IntersectionObserver(
-        (entries, observer) => {
-          if (entries.some((entry) => entry.intersectionRatio > 0)) {
+        (entries) => {
+          if (
+            entries.some(
+              (entry: { [key: string]: any }) => entry.intersectionRatio > 0
+            )
+          ) {
             if (isLastPage.value == false) {
               infiniteHandler();
             }
@@ -64,10 +68,10 @@
         { rootMargin: "50px" }
       );
       watch(
-        () => [props.id, props.search],
+        () => [props.id, props.search, route.query.keyword],
         (curr, prev) => {
           debounce(() => {
-            console.log("감시자:", curr, prev);
+            console.log("감시자:", "현재:", curr, "이전:", prev);
             page.value = 1;
             feedList.value = [];
             infiniteHandler();
@@ -87,7 +91,7 @@
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
-              user: props.id, // 작가찾기
+              user: props.id || route.query.id, // 작가찾기
               page: page.value,
               page_size: 30,
               search: props.search || route.query.keyword,
@@ -95,7 +99,7 @@
           })
           .then((response: { [key: string]: any }) => {
             if (response != undefined) {
-              console.log("이미지리스트결과:", response, route.query.keyword);
+              console.log("이미지리스트결과:", response.data.data);
               feedList.value.push(...response.data.data);
               page.value += 1;
               loading.value = false;
@@ -111,7 +115,7 @@
       onMounted(() => {
         io.observe(detector.value as unknown as HTMLElement);
       });
-      return { loading, feedList, detector, clickAdd };
+      return { loading, feedList, detector, route, clickAdd };
     },
   });
 </script>
