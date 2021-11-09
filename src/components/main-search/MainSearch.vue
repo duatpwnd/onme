@@ -6,7 +6,7 @@
     </h1>
     <h2 class="title">ONMI 웹사이트<br />타이틀 영역</h2>
     <p class="message">
-      NOPY 웹사이트 서브 타이틀 영역입니다. NOPY가 어떤 서비스인지 설명할 문구를
+      ONMI 웹사이트 서브 타이틀 영역입니다. ONMI가 어떤 서비스인지 설명할 문구를
       알려주세요.
     </p>
     <div class="search-area">
@@ -26,8 +26,8 @@
   </article>
 </template>
 <script lang="ts">
-  import { useRouter, useRoute } from "vue-router";
-  import { ref, defineComponent, getCurrentInstance, onMounted } from "vue";
+  import { useRouter } from "vue-router";
+  import { ref, defineComponent, getCurrentInstance } from "vue";
   export default defineComponent({
     name: "MainSearch",
     setup(props) {
