@@ -18,7 +18,7 @@
             @change="fileUploadFunc()"
           />
         </label>
-        <button class="menu-btn" @click="menu = true">메뉴</button>
+        <button class="menu-btn" @click="menu = true"></button>
       </div>
     </header>
     <!-- 유저 정보 :: S -->
@@ -170,7 +170,7 @@
         right: 0;
         bottom: 0;
         margin: auto;
-        height: 24px;
+        height: 28px;
         .add-btn {
           display: inline-block;
           vertical-align: middle;
@@ -186,6 +186,7 @@
           background: url("~@/assets/images/menu.png") no-repeat center / 24px
             24px;
           width: 24px;
+          height: 24px;
           vertical-align: middle;
           margin-left: 28px;
         }
