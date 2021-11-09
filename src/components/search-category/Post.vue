@@ -67,9 +67,8 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const router = globalProperties?.$router;
       const emitter = globalProperties?.emitter;
-      const { keyword, tagList, userList, createHistory, deleteHistory } =
+      const { keyword, allList, createHistory, deleteHistory } =
         searchHistory();
-      const allList = computed(() => [...userList.value, ...tagList.value]);
       const search = (title: string) => {
         emitter.emit("search-result", title);
       };
@@ -81,7 +80,7 @@
   @import "@/components/search-category/search.scss";
   .posts {
     overflow-y: auto;
-    padding: 20px 0;
+    margin-top: 20px;
     box-sizing: border-box;
   }
 </style>

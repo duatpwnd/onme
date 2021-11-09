@@ -72,6 +72,7 @@ export default function searchHistory() {
     }
   };
   const getHistory = () => {
+    allList.value = [];
     userList.value = [];
     tagList.value = [];
     axios
@@ -83,6 +84,7 @@ export default function searchHistory() {
       })
       .then((result: any) => {
         console.log("검색히스토리결과:", result);
+        allList.value.push(...result.data.data);
         result.data.data.forEach((el: { [key: string]: any }) => {
           if (el.tag == null) {
             userList.value.push(el);

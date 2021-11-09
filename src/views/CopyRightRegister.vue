@@ -95,7 +95,7 @@
           <img src="@/assets/images/tag.png" alt="" title="" class="tag-img" />
           <div class="tag-info">
             <b class="tag-title"><b>#</b>{{ list.title }}</b>
-            <span class="works">저작물 {{ list.works }}</span>
+            <span class="works">작품 {{ list.count_posts }}개</span>
           </div>
         </li>
         <div class="loading1" v-show="loading1">
@@ -509,6 +509,16 @@
             .tag-info {
               display: inline-block;
               vertical-align: middle;
+              width: calc(100% - 85px);
+              .tag-title {
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                word-break: break-all;
+                word-wrap: break-word;
+              }
               .works {
                 display: block;
                 font-size: 12px;

@@ -1,9 +1,10 @@
 <template>
+  <div class="nopy-full-bg"></div>
   <article class="home-left-area">
     <h1 class="logo">
       <img src="@/assets/images/pc_logo.png" @click="router.push('/')" />
     </h1>
-    <h2 class="title">NPPY 웹사이트<br />타이틀 영역</h2>
+    <h2 class="title">ONMI 웹사이트<br />타이틀 영역</h2>
     <p class="message">
       NOPY 웹사이트 서브 타이틀 영역입니다. NOPY가 어떤 서비스인지 설명할 문구를
       알려주세요.
@@ -25,28 +26,29 @@
   </article>
 </template>
 <script lang="ts">
-  import { ref, defineComponent, getCurrentInstance } from "vue";
+  import { useRouter, useRoute } from "vue-router";
+  import { ref, defineComponent, getCurrentInstance, onMounted } from "vue";
   export default defineComponent({
     name: "MainSearch",
-    setup() {
+    setup(props) {
       console.log("setup호출");
       const globalProperties =
         getCurrentInstance()?.appContext.config.globalProperties;
-      const router = globalProperties?.$router;
+      const router = useRouter();
       const emitter = globalProperties?.emitter;
       const text = ref("");
       const search = () => {
-        router.push(
-          {
+        if (text.value.trim().length > 0) {
+          router.push({
             path: "/search",
             query: {
-              keyword: text.value.trim(),
+              keyword: (text.value as string).trim(),
             },
-          },
-          () => {
-            console.log("갔뜨아");
-          }
-        );
+          });
+          setTimeout(() => {
+            emitter.emit("search-result", (text.value as string).trim());
+          }, 100);
+        }
       };
       return { router, text, search };
     },
@@ -77,7 +79,6 @@
       line-height: 26px;
     }
     .search-area {
-      width: 530px;
       margin-top: 3.1vh;
       .text-input {
         color: white;

@@ -11,7 +11,6 @@ import mitt from "mitt";
 import { Integrations } from "@sentry/tracing";
 import globalPlugin from "@/plugin/globalPlugin";
 import VueClipboard from "vue3-clipboard";
-import VueLazyLoad from "vue3-lazyload";
 const app = createApp(App);
 const emitter = mitt();
 app.config.globalProperties.axios = axios;
@@ -24,7 +23,6 @@ app
   .use(Vue3Mq)
   .use(router)
   .use(VueCookieNext)
-  .use(VueLazyLoad)
   .mount("#app");
 app.use(VueClipboard, {
   autoSetContainer: true,

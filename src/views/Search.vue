@@ -30,7 +30,12 @@
       <button @click="closeSearchTab()" v-show="searchTab">취소</button>
     </header>
     <div class="recommend-list">
-      <h2 class="h2-title">{{ resultedKeyword }}</h2>
+      <h2
+        class="h2-title"
+        v-html="resultedKeyword"
+        v-if="route.query.keyword != undefined"
+      ></h2>
+      <h2 class="h2-title" v-else>추천</h2>
       <div v-show="searchTab" class="search-tab">
         <div class="tab">
           <button
@@ -49,13 +54,13 @@
           최근검색
         </h2>
         <keep-alive>
-          <component :is="currentComponent" :style="styleObject" in></component>
+          <component :is="currentComponent" :style="styleObject"></component>
         </keep-alive>
       </div>
     </div>
   </div>
   <div v-show="searchTab == false">
-    <MasnoryLayout :id="userid" :search="tag" />
+    <MasnoryLayout :search="tag" />
   </div>
 </template>
 <script lang="ts">
@@ -87,9 +92,10 @@
       const route = useRoute();
       const debounce = globalProperties?.$debounce();
       const search = ref("");
-      const userid = ref<null | number>(null); // 작가검색 리스트의 고유한id값으로 이미지 리스트 뿌리기
       const tag = ref<null | string>(null); // 태그검색 리스트의 타이틀값으로 이미지 리스트 뿌리기
-      const resultedKeyword = ref("추천");
+      const resultedKeyword = ref(
+        `<strong class="resulted-keyword">${route.query.keyword}</strong> 검색결과`
+      );
       const currentComponent = ref("post");
       const searchTab = ref(false);
       const emitter = globalProperties?.emitter;
@@ -107,10 +113,8 @@
               height: "calc(100% - 131px)",
             }
       );
-
       // 태그검색
       const { keyword, getHistory } = searchHistory();
-
       // 검색탭 닫기
       const closeSearchTab = () => {
         searchTab.value = false;
@@ -125,10 +129,17 @@
           getHistory();
         }
         emitter.on("search-result", (result: string) => {
+          router.push({
+            query: {
+              keyword: result,
+            },
+          });
+          console.log("search-result", result, route.query.keyword);
           searchTab.value = false;
-          tag.value = result as string;
-          userid.value = null;
-          resultedKeyword.value = result + " 검색결과";
+          // tag.value = result as string;
+          // userid.value = null;
+          resultedKeyword.value =
+            `<strong class="resulted-keyword">${result}</strong>` + "검색결과";
         });
       });
       return {
@@ -137,7 +148,6 @@
         searchTab,
         search,
         debounce,
-        userid,
         tag,
         resultedKeyword,
         styleObject,
@@ -197,14 +207,24 @@
       .recommend-list {
         position: relative;
         margin-top: 10px;
-        .h2-title {
+        :deep .h2-title {
           margin-top: 20px;
           padding: 0 20px;
+          .resulted-keyword {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            word-break: break-all;
+            word-wrap: break-word;
+          }
         }
         .search-tab {
           position: fixed;
           top: 78px;
-          width: 435px;
+          max-width: 435px;
+          width: 100%;
           z-index: 4;
           background: white;
           height: 100%;
@@ -212,7 +232,7 @@
           flex-direction: column;
           .recently-search {
             padding: 0 20px;
-            margin-top: 30px;
+            margin-top: 20px;
           }
           .history {
             background: white;
