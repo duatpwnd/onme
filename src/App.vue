@@ -11,7 +11,6 @@
       }
     "
   />
-  <div class="nopy-full-bg"></div>
   <MainSearch />
   <router-view />
 </template>
@@ -34,7 +33,6 @@
       if (userInfo != null) {
         store.commit("userStore/USER_INFO", userInfo);
       }
-
       return { splash };
     },
   });
