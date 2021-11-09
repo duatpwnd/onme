@@ -10,7 +10,7 @@ export default {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           fnc();
-        }, 300);
+        }, 500);
       };
     };
     // 로그아웃 함수
