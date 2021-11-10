@@ -452,7 +452,7 @@
       }
       .representative-img {
         width: 100%;
-        max-height: 300px;
+        max-height: 750px;
       }
       .tag,
       .license,

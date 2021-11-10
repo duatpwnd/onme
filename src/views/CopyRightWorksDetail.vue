@@ -300,6 +300,7 @@
     position: relative;
     .representative-img {
       width: 100%;
+      max-height: 750px;
     }
     .btn-wrap {
       position: absolute;
