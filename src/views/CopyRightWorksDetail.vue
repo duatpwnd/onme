@@ -181,6 +181,11 @@
         const set = setTimeout(() => {
           guideMessage.value = "";
           clearTimeout(set);
+          axios
+            .post(apiUrl.feedList + `/${route.query.id}/source_share/`)
+            .then((result: any) => {
+              console.log("출처복사결과:", result);
+            });
         }, 1500);
       };
       const download = () => {
