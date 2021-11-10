@@ -126,7 +126,7 @@
     </dl>
   </article> -->
   <!-- 저작물 가이드 :: E -->
-  <div class="fixed-btn">
+  <div class="fixed-btn" v-if="detailInfo.is_usable">
     <button
       class="copy-btn"
       v-clipboard:copy="url"

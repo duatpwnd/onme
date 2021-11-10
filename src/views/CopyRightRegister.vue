@@ -61,31 +61,37 @@
         >{{ "#" + list
         }}<span class="close-btn" @click="deleteTag(index)">X</span></span
       >
-      <b class="prefix" v-show="tags.length < 5">#</b>
-      <input
-        type="text"
-        placeholder="태그입력"
-        class="tag-input"
-        v-show="tags.length < 5"
-        v-on:input="keyword = $event.target.value"
-        :value="keyword"
-        @focus="
-          isInputFocus = true;
-          mask = true;
-        "
-        @keyup="
-          debounce(() => {
-            tagList = [];
-            search();
-          })
-        "
-        @keyup.space="keySpace()"
-      />
-      <p class="guide-message" v-show="tags.length > 4">
+      <span>
+        <b class="prefix" v-show="tags.length < 5">#</b>
+        <input
+          type="text"
+          placeholder="태그입력"
+          class="tag-input"
+          v-show="tags.length < 5"
+          v-on:input="keyword = $event.target.value"
+          :value="keyword"
+          @focus="
+            isInputFocus = true;
+            mask = true;
+          "
+          @keyup="
+            debounce(() => {
+              tagList = [];
+              search();
+            })
+          "
+          @keyup.space="keySpace()"
+        />
+      </span>
+      <p class="guide-message" v-show="isInputFocus && tags.length > 4">
         태그 최대 5개까지 입력가능
       </p>
       <!-- 태그 리스트 :: S -->
-      <ul class="tag-wrap" ref="detector" v-show="isInputFocus">
+      <ul
+        class="tag-wrap"
+        ref="detector"
+        v-show="isInputFocus && tags.length < 5"
+      >
         <li
           v-for="(list, index) in tagList"
           :key="index"
@@ -105,7 +111,7 @@
       <!-- 태그 리스트 :: E -->
     </div>
     <div class="title-input">
-      <input type="text" v-model="post_name" />
+      <input type="text" v-model="post_name" placeholder="제목 입력" />
     </div>
     <div class="is-open">
       <h2 class="title">공개여부</h2>
@@ -299,7 +305,7 @@
         post_copyrights: { [key: string]: any }[] | null;
       }
       let reactiveData: Type = reactive({
-        post_name: "제목 입력",
+        post_name: "",
         is_usable: true,
         is_public: true,
         original_images: [localStorage.getItem("base64") as string],
@@ -332,8 +338,6 @@
       };
       // 작품수정링크 타고왔을경우 :: E
       const modify = () => {
-        loading.value = true;
-        mask.value = true;
         delete reactiveData["original_images"];
         axios
           .patch(apiUrl.register + `/${route.query.id}`, reactiveData)
