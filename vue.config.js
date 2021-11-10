@@ -6,6 +6,8 @@ module.exports = {
   chainWebpack: (config) => {
     // lazyload 한번에 리소스를 다운받기보다는 해당라우터에서 필요한 리로스만 다운받을수있도록
     config.plugins.delete("prefetch");
+    config.plugins.delete("preload");
+    config.optimization.minimize(true);
   },
   configureWebpack: {
     // 배포를 할때 여러개의 chunk css와js를 하나로 압축함, 빌드된 js의 용량크기를 줄여줌

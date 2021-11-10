@@ -25,8 +25,7 @@
         class="profile-btn"
         :style="[{ 'background-image': `url(${userInfo.image_profile})` }]"
         to="/myPage"
-        >프로필</router-link
-      >
+      ></router-link>
       <router-link
         v-else
         class="profile-btn"
@@ -34,8 +33,7 @@
           'background-image': `url(${require('@/assets/images/signout_profile_img1.png')})`,
         }"
         to="/myPage"
-        >프로필</router-link
-      >
+      ></router-link>
     </div>
   </header>
   <div class="wrap">
