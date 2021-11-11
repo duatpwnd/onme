@@ -1,8 +1,10 @@
 import axios from "axios";
 import { VueCookieNext } from "vue-cookie-next";
 import { createApp } from "vue";
+import globalPlugin from "@/plugin/globalPlugin";
 import App from "@/App.vue";
 const app = createApp(App);
+app.use(globalPlugin);
 const axiosSet = () => {
   axios.defaults.baseURL = process.env.VUE_APP_API_URL;
   axios.interceptors.request.use(
@@ -27,7 +29,6 @@ const axiosSet = () => {
     (err: any) => {
       console.log("요청후에러:", err.response);
       if (err.response.status == 403) {
-        console.log("dd");
         app.config.globalProperties.$signOut();
       }
       return Promise.reject(err.response);

@@ -19,7 +19,19 @@
           });
         "
       >
-        <img src="@/assets/images/ex1.png" alt="" title="" class="tag-img" />
+        <img
+          v-if="list.image_profile == null"
+          src="@/assets/images/signout_profile_img2.png"
+          class="tag-img"
+        />
+        <img
+          v-else
+          :src="list.image_profile"
+          :alt="list.username"
+          :title="list.username"
+          class="tag-img"
+        />
+
         <div class="user-info">
           <b class="user-name">{{ list.username }}</b>
           <span class="works">작품 {{ list.count_posts }}개</span>
