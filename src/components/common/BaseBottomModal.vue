@@ -40,7 +40,7 @@
     background: rgba(0, 0, 0, 0.6);
     .modal {
       position: absolute;
-      bottom: 51px;
+      bottom: 0px;
       max-width: 435px;
       width: 100%;
       .close-area {
