@@ -88,6 +88,7 @@
       const infiniteHandler = () => {
         loading.value = true;
         isLastPage.value = true;
+        console.log("router", route);
         axios
           .get(`${apiUrl.feedList}/`, {
             params: {
@@ -95,6 +96,7 @@
               page: page.value,
               page_size: 30,
               search: props.search || route.query.keyword,
+              tag_title: route.query.tag,
             },
           })
           .then((response: { [key: string]: any }) => {

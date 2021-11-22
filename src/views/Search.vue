@@ -128,16 +128,23 @@
         if (keyword.value.trim().length == 0) {
           getHistory();
         }
+        emitter.on("search-result-tags", (result: string) => {
+          router.push({
+            query: {
+              tag: result,
+            },
+          });
+          searchTab.value = false;
+          resultedKeyword.value =
+            `<strong class="resulted-keyword">${result}</strong>` + "검색결과";
+        });
         emitter.on("search-result", (result: string) => {
           router.push({
             query: {
               keyword: result,
             },
           });
-          console.log("search-result", result, route.query.keyword);
           searchTab.value = false;
-          // tag.value = result as string;
-          // userid.value = null;
           resultedKeyword.value =
             `<strong class="resulted-keyword">${result}</strong>` + "검색결과";
         });
