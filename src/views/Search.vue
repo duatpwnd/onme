@@ -50,7 +50,10 @@
             {{ value }}
           </button>
         </div>
-        <h2 class="recently-search" v-show="keyword.trim().length == 0">
+        <h2
+          class="recently-search"
+          v-show="keyword.trim().length == 0 && userInfo.id != undefined"
+        >
           최근검색
         </h2>
         <keep-alive>
@@ -99,6 +102,8 @@
       const currentComponent = ref("post");
       const searchTab = ref(false);
       const emitter = globalProperties?.emitter;
+      const store = globalProperties?.$store;
+      const userInfo = computed(() => store.state.userStore.userInfo);
       const type = {
         post: "작품",
         user: "작가",
@@ -159,6 +164,7 @@
         resultedKeyword,
         styleObject,
         route,
+        userInfo,
         back,
         closeSearchTab,
         ...searchHistory(),

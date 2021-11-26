@@ -4,11 +4,13 @@
     <h1 class="logo">
       <img src="@/assets/images/pc_logo.png" @click="router.push('/')" />
     </h1>
-    <h2 class="title">ONMI 웹사이트<br />타이틀 영역</h2>
-    <p class="message">
-      ONMI 웹사이트 서브 타이틀 영역입니다. ONMI가 어떤 서비스인지 설명할 문구를
-      알려주세요.
-    </p>
+    <h2 class="title">
+      미술관 경험 그대로<br /><span class="unique">온</span>라인
+      <span class="unique">미</span>술관
+    </h2>
+    <!-- <p class="message">
+      온라인 미술관 온미는 시간, 공간 제약 없이 언제 어디서든
+    </p> -->
     <div class="search-area">
       <input
         type="text"
@@ -71,6 +73,9 @@
       color: white;
       line-height: 68px;
       margin-top: 16vh;
+      .unique {
+        color: #256ee8;
+      }
     }
     .message {
       color: #79828a;
@@ -79,7 +84,7 @@
       line-height: 26px;
     }
     .search-area {
-      margin-top: 3.1vh;
+      margin-top: 8.5vh;
       .text-input {
         color: white;
         font-size: 20px;

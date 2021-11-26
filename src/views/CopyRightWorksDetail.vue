@@ -202,7 +202,7 @@
                 let link = document.createElement("a");
                 link.href = "data:image/jpeg;base64," + result.data.data;
                 link.target = "_self";
-                link.download = "NOPY";
+                link.download = "ONME";
                 link.click();
               });
           });

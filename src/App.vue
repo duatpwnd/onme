@@ -1,5 +1,5 @@
 <template>
-  <lottie-player
+  <!-- <lottie-player
     v-if="splash"
     class="lottie-player"
     :src="require('@/assets/json/splash.json')"
@@ -10,7 +10,8 @@
         splash = false;
       }
     "
-  />
+  /> -->
+  <!-- <img src="@/assets/images/OPG.png" /> -->
   <MainSearch />
   <router-view />
 </template>

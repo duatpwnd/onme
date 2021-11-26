@@ -10,3 +10,4 @@ declare module "vue3-clipboard";
 declare module "infinite-loading-vue3";
 declare module "v-lazy-image";
 declare module "vue3-mq";
+declare module "link-prevue";

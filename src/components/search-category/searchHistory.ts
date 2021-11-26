@@ -1,8 +1,9 @@
-import { ref } from "vue";
-import { useRoute } from "vue-router";
+import { ref, computed } from "vue";
 import axios from "axios";
 import apiUrl from "@/assets/js/apiUrl";
 import router from "@/router";
+import store from "@/store";
+const userInfo = computed(() => store.state.userStore.userInfo);
 const keyword = ref("");
 const allList = ref<{ [key: string]: any }[]>([]);
 const tagList = ref<{ [key: string]: any }[]>([]);
@@ -75,37 +76,41 @@ export default function searchHistory() {
     }
   };
   const getHistory = () => {
-    allList.value = [];
-    userList.value = [];
-    tagList.value = [];
-    axios
-      .get(apiUrl.searchHistory, {
-        params: {
-          page: 1,
-          page_size: 15,
-        },
-      })
-      .then((result: any) => {
-        console.log("검색히스토리결과:", result);
-        allList.value.push(...result.data.data);
-        result.data.data.forEach((el: { [key: string]: any }) => {
-          if (el.tag == null) {
-            userList.value.push(el);
-          } else {
-            tagList.value.push(el);
-          }
+    if (userInfo.value.id != undefined) {
+      allList.value = [];
+      userList.value = [];
+      tagList.value = [];
+      axios
+        .get(apiUrl.searchHistory, {
+          params: {
+            page: 1,
+            page_size: 15,
+          },
+        })
+        .then((result: any) => {
+          console.log("검색히스토리결과:", result);
+          allList.value.push(...result.data.data);
+          result.data.data.forEach((el: { [key: string]: any }) => {
+            if (el.tag == null) {
+              userList.value.push(el);
+            } else {
+              tagList.value.push(el);
+            }
+          });
         });
-      });
+    }
   };
   const createHistory = (type: string, data: { [key: string]: any }) => {
-    axios
-      .post(apiUrl.searchHistory + `/${type}`, data)
-      .then((result: { [key: string]: any }) => {
-        console.log("검색생성결과:", result);
-        if (keyword.value.trim().length == 0) {
-          getHistory();
-        }
-      });
+    if (userInfo.value.id != undefined) {
+      axios
+        .post(apiUrl.searchHistory + `/${type}`, data)
+        .then((result: { [key: string]: any }) => {
+          console.log("검색생성결과:", result);
+          if (keyword.value.trim().length == 0) {
+            getHistory();
+          }
+        });
+    }
   };
   const deleteHistory = (id: number) => {
     axios

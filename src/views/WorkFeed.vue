@@ -2,7 +2,7 @@
   <header>
     <h2>작품피드</h2>
     <div class="btn-wrap">
-      <label for="upload" class="add-btn">
+      <label for="upload" class="add-btn" v-if="userInfo.id != undefined">
         <input
           type="file"
           accept=".png,.jpg,.jpeg"
@@ -11,6 +11,7 @@
           @change="fileUploadFunc()"
         />
       </label>
+      <label v-else class="add-btn" @click="router.push('/signIn')"></label>
       <router-link class="search-btn" to="/search"></router-link>
       <router-link
         v-if="userInfo.id == undefined"
@@ -101,13 +102,19 @@
       };
       console.log(userInfo.value);
       // 파일업로드 함수 :: E //
-
+      const folderCreate = () => {
+        axios.get("/folderCreate").then((result: any) => {
+          console.log("파일결과:", result);
+        });
+      };
       onMounted(() => {
         // window.addEventListener("scroll", onScroll);
       });
       return {
+        folderCreate,
         alarm,
         userInfo,
+        router,
         ...fileUpload(),
       };
     },
@@ -123,7 +130,7 @@
       top: 0;
       background: white;
       h2 {
-        font-size: 18px;
+        font-size: 24px;
         position: absolute;
         top: 0;
         left: 20px;
