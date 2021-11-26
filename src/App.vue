@@ -11,7 +11,6 @@
       }
     "
   /> -->
-  <!-- <img src="@/assets/images/OPG.png" /> -->
   <MainSearch />
   <router-view />
 </template>
