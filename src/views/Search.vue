@@ -73,6 +73,7 @@
     ref,
     getCurrentInstance,
     computed,
+    onUnmounted,
   } from "vue";
   import { useRoute } from "vue-router";
   import Post from "@/components/search-category/Post.vue";
@@ -127,8 +128,10 @@
       };
       const back = () => {
         router.go(-1);
-        keyword.value = "";
       };
+      onUnmounted(() => {
+        keyword.value = "";
+      });
       onMounted(() => {
         if (keyword.value.trim().length == 0) {
           getHistory();

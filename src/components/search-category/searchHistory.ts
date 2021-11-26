@@ -76,10 +76,10 @@ export default function searchHistory() {
     }
   };
   const getHistory = () => {
+    allList.value = [];
+    userList.value = [];
+    tagList.value = [];
     if (userInfo.value.id != undefined) {
-      allList.value = [];
-      userList.value = [];
-      tagList.value = [];
       axios
         .get(apiUrl.searchHistory, {
           params: {
