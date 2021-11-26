@@ -131,6 +131,7 @@
       };
       onUnmounted(() => {
         keyword.value = "";
+        getHistory();
       });
       onMounted(() => {
         if (keyword.value.trim().length == 0) {
