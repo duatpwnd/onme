@@ -1,8 +1,7 @@
-import { createStore } from "vuex";
+import { createStore, createLogger } from "vuex";
+import userStore from "@/store/modules/userStore";
 export default createStore({
-    state: {},
-    mutations: {},
-    actions: {},
-    modules: {},
+  modules: { userStore },
+  plugins:
+    process.env.NODE_ENV === "development" ? [createLogger()] : undefined,
 });
-//# sourceMappingURL=index.js.map
