@@ -136,7 +136,7 @@
         left: 20px;
         bottom: 0;
         margin: auto;
-        height: 20px;
+        height: 34px;
       }
       .btn-wrap {
         position: absolute;
