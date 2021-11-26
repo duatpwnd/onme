@@ -16,9 +16,6 @@ module.exports = {
       new webpack.optimize.LimitChunkCountPlugin({
         maxChunks: 1,
       }),
-      new SourceMapDevToolPlugin({
-        filename: "[file].map",
-      }),
       // 번들된 파일들의 용량을 보여주는 ui 플러그인
       // new BundleAnalyzerPlugin(),
     ],
@@ -32,6 +29,7 @@ module.exports = {
       },
     },
   },
+  devtool: "source-map",
   filenameHashing: false,
   productionSourceMap: false,
 };
