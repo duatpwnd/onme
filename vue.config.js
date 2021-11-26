@@ -29,7 +29,7 @@ module.exports = {
       },
     },
   },
-  devtool: "source-map",
+  devtool: "eval-cheap-source-map",
   filenameHashing: false,
   productionSourceMap: false,
 };
