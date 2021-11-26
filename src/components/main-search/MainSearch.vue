@@ -77,6 +77,8 @@
       bottom: 0;
       margin: auto;
       height: 496px;
+      width: 100%;
+      max-width: 512px;
       .title {
         font-size: 52px;
         color: white;
