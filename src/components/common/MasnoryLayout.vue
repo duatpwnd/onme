@@ -1,17 +1,14 @@
 <template>
   <div class="masnory-wrap">
     <div class="masnory">
-      <div class="mItem" v-for="(list, index) in feedList" :key="index">
-        <router-link
-          :to="{ path: '/detail', query: { id: list.id } }"
-          @click="clickAdd(list.id)"
-        >
-          <img
-            :src="list.original_images[0]"
-            v-if="list.original_images.length > 0"
-          />
-        </router-link>
-      </div>
+      <router-link
+        v-for="(list, index) in feedList"
+        :key="index"
+        :to="{ path: '/detail', query: { id: list.id } }"
+        @click="clickAdd(list.id)"
+      >
+        <img :src="list.original_images[0]" />
+      </router-link>
     </div>
     <div class="scroll-detecting" ref="detector"></div>
     <div class="loading" v-show="loading">
@@ -148,17 +145,12 @@
     column-count: 2;
     column-gap: 16px;
     padding: 0 20px;
-    .mItem {
-      display: inline-block;
-      margin-bottom: 16px;
+    a {
       width: 100%;
-      a {
+      padding-bottom: 16px;
+      img {
         width: 100%;
         border-radius: 12px;
-        overflow: hidden;
-        img {
-          width: 100%;
-        }
       }
     }
   }

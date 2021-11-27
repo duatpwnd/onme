@@ -92,7 +92,7 @@
   @import "@/components/search-category/search.scss";
   .posts {
     overflow-y: auto;
-    margin-top: 20px;
+    padding-top: 20px;
     box-sizing: border-box;
   }
 </style>

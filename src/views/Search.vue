@@ -19,6 +19,7 @@
         class="delete-btn"
         @click="
           keyword = '';
+          searchTab = true;
           getHistory();
         "
         v-show="keyword.trim().length > 0"
