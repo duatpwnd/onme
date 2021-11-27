@@ -61,9 +61,10 @@
     <div class="user-intro">
       <span @click="userClickAdd()">
         <img
-          src="@/assets/images/profile_img.png"
+          :src="detailInfo.image_profile"
           alt="유저프로필"
           title="유저프로필"
+          class="image-profile"
         />
         <span class="user-name">{{ detailInfo.username }}</span>
       </span>
@@ -228,10 +229,22 @@
           },
         });
       };
+      const getUserInfo = (id: number) => {
+        axios
+          .get(apiUrl.userSearch + `/${id}`)
+          .then((result: { [key: string]: any }) => {
+            console.log("유저정보검색결과:", result.data.data);
+            res.detailInfo.image_profile = result.data.data.image_profile;
+          })
+          .catch((err: any) => {
+            console.log("유저정보얻기에러:", err);
+          });
+      };
       const getDetailList = (id: number) => {
         axios.get(apiUrl.feedList + `/${id}`).then((result: any) => {
           console.log("상세조회 결과:", result.data.data);
           res.detailInfo = result.data.data;
+          getUserInfo(result.data.data.user);
         });
       };
       getDetailList(route.query.id);
@@ -366,7 +379,12 @@
         white-space: nowrap;
         margin-left: 16px;
         vertical-align: middle;
-        margin-right: 12px;
+      }
+      .image-profile {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        border-radius: 50px;
       }
       .created {
         font-size: 12px;
