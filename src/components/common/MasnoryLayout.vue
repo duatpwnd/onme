@@ -26,6 +26,7 @@
     ref,
     getCurrentInstance,
     watch,
+    computed,
   } from "vue";
   import { useRoute } from "vue-router";
   export default defineComponent({
@@ -43,6 +44,7 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
+      const store = globalProperties?.$store;
       const detector = ref(null || HTMLElement);
       const page = ref(1);
       const debounce = globalProperties?.$debounce();
@@ -50,6 +52,7 @@
       const loading = ref(false);
       const isLastPage = ref(false);
       const feedList = ref<{ [key: string]: any }>([]);
+      const userInfo = computed(() => store.state.userStore.userInfo);
       const io = new IntersectionObserver(
         (entries) => {
           if (
@@ -76,11 +79,13 @@
         }
       );
       const clickAdd = (id: number) => {
-        axios
-          .post(`${apiUrl.feedList}/${id}/click`)
-          .then((response: { [key: string]: any }) => {
-            console.log("게시물클릭결과:", response.data.data);
-          });
+        if (userInfo.value.id != undefined) {
+          axios
+            .post(`${apiUrl.feedList}/${id}/click`)
+            .then((response: { [key: string]: any }) => {
+              console.log("게시물클릭결과:", response.data.data);
+            });
+        }
       };
       const infiniteHandler = () => {
         loading.value = true;

@@ -217,11 +217,13 @@
           });
       };
       const userClickAdd = () => {
-        axios
-          .post(apiUrl.userSearch + `/${res.detailInfo.user}/click`)
-          .then((result: any) => {
-            console.log("유저클릭결과:", result.data.data);
-          });
+        if (userInfo.value.id != undefined) {
+          axios
+            .post(apiUrl.userSearch + `/${res.detailInfo.user}/click`)
+            .then((result: any) => {
+              console.log("유저클릭결과:", result.data.data);
+            });
+        }
         router.push({
           path: "/userDetail",
           query: {
