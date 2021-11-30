@@ -24,9 +24,7 @@
 <script lang="ts">
   import {
     defineComponent,
-    onMounted,
     reactive,
-    ref,
     computed,
     getCurrentInstance,
     toRefs,
@@ -43,10 +41,8 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const axios = globalProperties?.axios;
       const apiUrl = globalProperties?.apiUrl;
-      const store = globalProperties?.store;
       const route = globalProperties?.$route;
       const router = globalProperties?.$router;
-      const userStore = computed(() => store.state.userStore.userInfo);
       const res = reactive({ userInfo: "" });
       const getUserInfo = () => {
         axios

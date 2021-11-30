@@ -13,7 +13,7 @@
     >
       <img src="@/assets/images/tag.png" alt="" title="" class="tag-img" />
       <div class="tag-info">
-        <b class="tag-title"><b>#</b>{{ list.title }}</b>
+        <b class="tag-title">#{{ list.title }}</b>
         <span class="works">작품 {{ list.count_posts }}개</span>
       </div>
       <button
@@ -43,7 +43,6 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const emitter = globalProperties?.emitter;
       const scrollDetect = globalProperties?.$scrollDetect;
-      const router = globalProperties?.$router;
       let {
         isTagLastPage,
         tagList,
@@ -56,13 +55,7 @@
         tagSearch,
       } = searchHistory();
       const search = (title: string) => {
-        emitter.emit("search-result", title);
-        router.push({
-          path: "/search",
-          query: {
-            keyword: title,
-          },
-        });
+        emitter.emit("search-result-tags", title);
       };
       onActivated(() => {
         scrollDetect(detector.value, () => {

@@ -1,5 +1,5 @@
 <template>
-  <lottie-player
+  <!-- <lottie-player
     v-if="splash"
     class="lottie-player"
     :src="require('@/assets/json/splash.json')"
@@ -10,8 +10,7 @@
         splash = false;
       }
     "
-  />
-  <div class="nopy-full-bg"></div>
+  /> -->
   <MainSearch />
   <router-view />
 </template>
@@ -34,7 +33,6 @@
       if (userInfo != null) {
         store.commit("userStore/USER_INFO", userInfo);
       }
-
       return { splash };
     },
   });

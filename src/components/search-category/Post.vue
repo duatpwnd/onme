@@ -19,7 +19,19 @@
           });
         "
       >
-        <img src="@/assets/images/ex1.png" alt="" title="" class="tag-img" />
+        <img
+          v-if="list.image_profile == null"
+          src="@/assets/images/signout_profile_img2.png"
+          class="tag-img"
+        />
+        <img
+          v-else
+          :src="list.image_profile"
+          :alt="list.username"
+          :title="list.username"
+          class="tag-img"
+        />
+
         <div class="user-info">
           <b class="user-name">{{ list.username }}</b>
           <span class="works">작품 {{ list.count_posts }}개</span>
@@ -67,9 +79,8 @@
         getCurrentInstance()?.appContext.config.globalProperties;
       const router = globalProperties?.$router;
       const emitter = globalProperties?.emitter;
-      const { keyword, tagList, userList, createHistory, deleteHistory } =
+      const { keyword, allList, createHistory, deleteHistory } =
         searchHistory();
-      const allList = computed(() => [...userList.value, ...tagList.value]);
       const search = (title: string) => {
         emitter.emit("search-result", title);
       };
@@ -81,7 +92,7 @@
   @import "@/components/search-category/search.scss";
   .posts {
     overflow-y: auto;
-    padding: 20px 0;
+    padding-top: 20px;
     box-sizing: border-box;
   }
 </style>

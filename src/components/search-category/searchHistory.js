@@ -5,9 +5,9 @@ import router from "@/router";
 import store from "@/store";
 const userInfo = computed(() => store.state.userStore.userInfo);
 const keyword = ref("");
-const allList = ref<{ [key: string]: any }[]>([]);
-const tagList = ref<{ [key: string]: any }[]>([]);
-const userList = ref<{ [key: string]: any }[]>([]);
+const allList = ref([]);
+const tagList = ref([]);
+const userList = ref([]);
 const isTagLastPage = ref(false);
 const isUserLastPage = ref(false);
 export default function searchHistory() {
@@ -26,13 +26,13 @@ export default function searchHistory() {
           search: keyword.value,
         },
       })
-      .then((result: { [key: string]: any }) => {
+      .then((result) => {
         console.log("태그검색결과:", result.data.data);
         tagList.value.push(...result.data.data);
         loading.value = false;
         return result.data.data;
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.log("태그마지막페이지다");
         isTagLastPage.value = true;
         loading.value = false;
@@ -50,12 +50,12 @@ export default function searchHistory() {
           search: keyword.value,
         },
       })
-      .then((result: { [key: string]: any }) => {
+      .then((result) => {
         console.log("작가검색결과:", result.data.data);
         userList.value.push(...result.data.data);
         return result.data.data;
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.log("작가마지막페이지다");
         isUserLastPage.value = true;
         page.value = 1;
@@ -87,10 +87,10 @@ export default function searchHistory() {
             page_size: 15,
           },
         })
-        .then((result: any) => {
+        .then((result) => {
           console.log("검색히스토리결과:", result);
           allList.value.push(...result.data.data);
-          result.data.data.forEach((el: { [key: string]: any }) => {
+          result.data.data.forEach((el) => {
             if (el.tag == null) {
               userList.value.push(el);
             } else {
@@ -100,29 +100,24 @@ export default function searchHistory() {
         });
     }
   };
-  const createHistory = (type: string, data: { [key: string]: any }) => {
+  const createHistory = (type, data) => {
     if (userInfo.value.id != undefined) {
-      axios
-        .post(apiUrl.searchHistory + `/${type}`, data)
-        .then((result: { [key: string]: any }) => {
-          console.log("검색생성결과:", result);
-          if (keyword.value.trim().length == 0) {
-            getHistory();
-          }
-        });
-    }
-  };
-  const deleteHistory = (id: number) => {
-    axios
-      .delete(apiUrl.searchHistory + `/${id}`)
-      .then((result: { [key: string]: any }) => {
-        console.log("삭제결과:", result);
+      axios.post(apiUrl.searchHistory + `/${type}`, data).then((result) => {
+        console.log("검색생성결과:", result);
         if (keyword.value.trim().length == 0) {
           getHistory();
         }
       });
+    }
   };
-
+  const deleteHistory = (id) => {
+    axios.delete(apiUrl.searchHistory + `/${id}`).then((result) => {
+      console.log("삭제결과:", result);
+      if (keyword.value.trim().length == 0) {
+        getHistory();
+      }
+    });
+  };
   return {
     loading,
     isTagLastPage,

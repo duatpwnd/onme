@@ -2,11 +2,11 @@ import router from "@/router";
 import store from "@/store";
 import { VueCookieNext } from "vue-cookie-next";
 export default {
-  install: (app: { [key: string]: any }, options: any) => {
+  install: (app, options) => {
     // 여러번 호출되는 함수를 종합적으로 한번만호출해주는 함수
     app.config.globalProperties.$debounce = () => {
       let timeout = null || 1;
-      return (fnc: () => void) => {
+      return (fnc) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
           fnc();
@@ -20,7 +20,7 @@ export default {
       store.commit("userStore/USER_INFO", {});
     };
     // 파일객체를 base64로 바꿔주는 함수
-    app.config.globalProperties.$getBase64 = (obj: Blob) => {
+    app.config.globalProperties.$getBase64 = (obj) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(obj);
@@ -33,15 +33,12 @@ export default {
       });
     };
     // url을 base64로 바꿔주는 함수
-    app.config.globalProperties.$toDataURL = (
-      url: string,
-      callback: (param: string) => void
-    ) => {
+    app.config.globalProperties.$toDataURL = (url, callback) => {
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
         const reader = new FileReader();
         reader.onloadend = () => {
-          callback(reader.result as string);
+          callback(reader.result);
         };
         reader.readAsDataURL(xhr.response);
       };
@@ -50,10 +47,7 @@ export default {
       xhr.send();
     };
     // 스크롤 바닥 감지 함수
-    app.config.globalProperties.$scrollDetect = (
-      element: HTMLElement,
-      callback: () => void
-    ) => {
+    app.config.globalProperties.$scrollDetect = (element, callback) => {
       if (element != null) {
         element.addEventListener("scroll", () => {
           if (

@@ -4,9 +4,67 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= VUE_APP_DOMAIN %>" />
+    <meta property="og:title" content="온라인미술관, ONME" />
+    <meta
+      property="og:description"
+      content="미술관 경험 그대로, 온라인 미술관에서 관람하세요!"
+    />
+    <meta property="og:image" content="<%= VUE_APP_DOMAIN %>/OPG.png" />
+    <meta property="og:image:width" content="270" />
+    <meta property="og:image:height" content="270" />
+    <link rel="icon" />
     <link href="<%= BASE_URL %>font.css" rel="stylesheet" type="text/css" />
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <script>
+      function setCookie(cookie_name, value, days) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + days);
+        var cookie_value =
+          escape(value) +
+          (days == null ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = cookie_name + "=" + cookie_value;
+      }
+      function getCookie(cookie_name) {
+        var x, y;
+        var val = document.cookie.split(";");
+
+        for (var i = 0; i < val.length; i++) {
+          x = val[i].substr(0, val[i].indexOf("="));
+          y = val[i].substr(val[i].indexOf("=") + 1);
+          x = x.replace(/^\s+|\s+$/g, ""); // 앞과 뒤의 공백 제거하기
+          if (x == cookie_name) {
+            return unescape(y); // unescape로 디코딩 후 값 리턴
+          }
+        }
+      }
+      const arr = [
+        "/favicon_01.ico",
+        "/favicon_02.ico",
+        "/favicon_03.ico",
+        "/favicon_04.ico",
+      ];
+      const isOnIOS =
+        navigator.userAgent.match(/iPad/i) ||
+        navigator.userAgent.match(/iPhone/i);
+      const eventName = isOnIOS ? "pagehide" : "beforeunload";
+      window.addEventListener(eventName, (event) => {
+        if (getCookie("favicon") != undefined) {
+          setCookie("favicon", Number(getCookie("favicon")) + 1, 1);
+        }
+        if (Number(getCookie("favicon")) + 1 > arr.length) {
+          setCookie("favicon", 0, 1);
+        }
+      });
+      window.onload = function () {
+        if (getCookie("favicon") == undefined) {
+          setCookie("favicon", 0, 1);
+        }
+        const link = document.querySelector("link[rel~='icon']");
+        link.href = arr[Number(getCookie("favicon"))];
+      };
+    </script>
   </head>
   <body>
     <noscript>
