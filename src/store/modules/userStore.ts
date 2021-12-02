@@ -10,7 +10,6 @@ const userStore: Module<RootState, { [key: string]: any }> = {
   }),
   mutations: {
     [MutationTypes.USER_INFO]: (state, payload) => {
-      console.log(state, payload);
       state.userInfo = payload;
     },
   },

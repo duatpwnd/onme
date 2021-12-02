@@ -71,7 +71,6 @@
         () => [props.id, props.search, route.query.keyword],
         (curr, prev) => {
           debounce(() => {
-            console.log("감시자:", "현재:", curr, "이전:", prev);
             page.value = 1;
             feedList.value = [];
             infiniteHandler();
@@ -103,7 +102,6 @@
           })
           .then((response: { [key: string]: any }) => {
             if (response != undefined) {
-              console.log("이미지리스트결과:", response.data.data);
               feedList.value.push(...response.data.data);
               page.value += 1;
               loading.value = false;

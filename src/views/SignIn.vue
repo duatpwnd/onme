@@ -51,11 +51,11 @@
     defineComponent,
     onMounted,
     reactive,
-    ref,
     getCurrentInstance,
+    ref,
     computed,
   } from "vue";
-  import { useStore } from "vuex";
+  import searchHistory from "@/components/search-category/searchHistory";
   export default defineComponent({
     name: "SignIn",
     setup() {
@@ -86,6 +86,33 @@
         guideMsg1: false, // 이메일 유효성검사 통과 못했을때
         guideMsg2: "", // 이메일 유효성검사는 통과했지만 아이디 또는 비밀번호가 틀렸을때
       });
+      const { createHistory } = searchHistory();
+      const getSearchList = JSON.parse(
+        localStorage.getItem("search_word_list") as string
+      ).reverse();
+      const count = ref(0);
+      function load() {
+        console.log("value", count.value, "길이", getSearchList.length);
+        if (count.value == getSearchList.length) {
+          console.log("정지");
+          return;
+        }
+        createHistory(
+          getSearchList[count.value].title == null ? "user" : "tag",
+          getSearchList[count.value].title == null
+            ? {
+                searched_user: getSearchList[count.value].searched_user,
+              }
+            : {
+                tag: getSearchList[count.value].tag,
+              },
+          {}
+        ).then((result: any) => {
+          console.log("결과물:", result);
+          count.value += 1;
+          load();
+        });
+      }
       const signInSubmit = () => {
         const body = {
           email: userInput.userEmail.trim(),
@@ -98,6 +125,9 @@
             cookie.setCookie("userInfo", result.data.data);
             store.commit("userStore/USER_INFO", result.data.data);
             router.push("/");
+            if (getSearchList != null) {
+              load();
+            }
           })
           .catch((err: any) => {
             console.log(err);

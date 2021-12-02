@@ -5,12 +5,15 @@ import globalPlugin from "@/plugin/globalPlugin";
 import App from "@/App.vue";
 const app = createApp(App);
 app.use(globalPlugin);
+import searchHistory from "@/components/search-category/searchHistory";
+const { getHistory, allList } = searchHistory();
+
 const axiosSet = () => {
   axios.defaults.baseURL = process.env.VUE_APP_API_URL;
   axios.interceptors.request.use(
-    (config: any) => {
-      console.log("요청전:", config);
+    (config: { [key: string]: any }) => {
       if (VueCookieNext.getCookie("userInfo") != null) {
+        console.log("유저정보있다");
         config.headers.Authorization =
           "Token " + VueCookieNext.getCookie("userInfo").token;
         config.headers.common["Authorization"] =
@@ -18,8 +21,8 @@ const axiosSet = () => {
       }
       return config;
     },
-    (error) => {
-      return error;
+    (err) => {
+      return Promise.reject(err.response);
     }
   );
   axios.interceptors.response.use(

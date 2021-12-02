@@ -1,6 +1,7 @@
 import router from "@/router";
 import store from "@/store";
 import { VueCookieNext } from "vue-cookie-next";
+
 export default {
   install: (app: { [key: string]: any }, options: any) => {
     // 여러번 호출되는 함수를 종합적으로 한번만호출해주는 함수
@@ -15,9 +16,9 @@ export default {
     };
     // 로그아웃 함수
     app.config.globalProperties.$signOut = () => {
-      router.push("/signIn");
       VueCookieNext.removeCookie("userInfo");
       store.commit("userStore/USER_INFO", {});
+      router.push("/signIn");
     };
     // 파일객체를 base64로 바꿔주는 함수
     app.config.globalProperties.$getBase64 = (obj: Blob) => {

@@ -122,7 +122,7 @@
             }
       );
       // 태그검색
-      const { keyword, getHistory } = searchHistory();
+      const { keyword, getHistory, createHistory } = searchHistory();
       // 검색탭 닫기
       const closeSearchTab = () => {
         searchTab.value = false;

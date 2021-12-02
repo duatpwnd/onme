@@ -5,9 +5,18 @@
       :key="index"
       class="history-list"
       @click="
-        createHistory('tag', {
-          tag: list.user == undefined ? list.id : list.tag,
-        });
+        createHistory(
+          'tag',
+          {
+            tag: list.user == undefined ? list.id : list.tag,
+          },
+          {
+            ...list,
+            ...{
+              tag: list.user == undefined ? list.id : list.tag,
+            },
+          }
+        );
         search(list.title);
       "
     >
@@ -18,7 +27,7 @@
       </div>
       <button
         class="close-btn"
-        v-if="list.user != undefined"
+        v-if="keyword.trim().length == 0"
         @click.stop="deleteHistory(list.id)"
       ></button>
     </li>

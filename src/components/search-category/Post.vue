@@ -5,12 +5,22 @@
   <ul class="history" v-else>
     <li v-for="(list, index) in allList" :key="index" class="history-list">
       <div
-        v-if="list.tag == null"
+        v-if="list.title == null"
         @click="
-          createHistory('user', {
-            searched_user:
-              list.user == undefined ? list.id : list.searched_user,
-          });
+          createHistory(
+            'user',
+            {
+              searched_user:
+                list.user == undefined ? list.id : list.searched_user,
+            },
+            {
+              ...list,
+              ...{
+                searched_user:
+                  list.user == undefined ? list.id : list.searched_user,
+              },
+            }
+          );
           router.push({
             path: '/userDetail',
             query: {
@@ -38,16 +48,25 @@
         </div>
         <button
           class="close-btn"
-          v-if="list.user != undefined"
+          v-if="keyword.trim().length == 0"
           @click.stop="deleteHistory(list.id)"
         ></button>
       </div>
       <div
         v-else
         @click="
-          createHistory('tag', {
-            tag: list.user == undefined ? list.id : list.tag,
-          });
+          createHistory(
+            'tag',
+            {
+              tag: list.user == undefined ? list.id : list.tag,
+            },
+            {
+              ...list,
+              ...{
+                tag: list.user == undefined ? list.id : list.tag,
+              },
+            }
+          );
           search(list.title);
         "
       >
@@ -58,7 +77,7 @@
         </div>
         <button
           class="close-btn"
-          v-if="list.user != undefined"
+          v-if="keyword.trim().length == 0"
           @click.stop="deleteHistory(list.id)"
         ></button>
       </div>
